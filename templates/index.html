@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deal Finder — Live Coupons & Promo Codes</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --text: #e8eaf6;
+    --muted: #7c84a0;
+    --accent: #6c72f8;
+    --accent-glow: rgba(108,114,248,0.18);
+    --code-bg: #0d1520;
+    --code-border: #1e3a5f;
+    --success: #22c55e;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 28px 32px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #a5aaff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-left p {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 4px;
+  }
+
+  .last-updated {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* ── Refresh button ── */
+  #refreshBtn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    white-space: nowrap;
+  }
+  #refreshBtn:hover { opacity: 0.88; transform: translateY(-1px); }
+  #refreshBtn:active { transform: scale(0.97); }
+  #refreshBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Search + Filters ── */
+  .controls {
+    max-width: 1200px;
+    margin: 24px auto 0;
+    padding: 0 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+    max-width: 380px;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+  #searchInput {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 9px 14px 9px 38px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #searchInput:focus { border-color: var(--accent); }
+  #searchInput::placeholder { color: var(--muted); }
+
+  /* ── Category Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--text); }
+  .tab.active {
+    background: var(--accent-glow);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .type-filter {
+    display: flex;
+    gap: 6px;
+  }
+  .type-btn {
+    padding: 6px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .type-btn.active {
+    background: var(--surface2);
+    border-color: var(--text);
+    color: var(--text);
+  }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    max-width: 1200px;
+    margin: 14px auto 0;
+    padding: 0 32px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .stat strong { color: var(--text); }
+
+  /* ── Grid ── */
+  .grid {
+    max-width: 1200px;
+    margin: 20px auto 48px;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  /* ── Deal Card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.15s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--retailer-color, var(--accent));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .card:hover {
+    border-color: var(--retailer-color, var(--accent));
+    transform: translateY(-2px);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .retailer-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--retailer-color, #6c72f8) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--retailer-color, #6c72f8) 40%, transparent);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--retailer-color, var(--accent));
+  }
+
+  .deal-type-badge {
+    margin-left: auto;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .deal-type-badge.code {
+    background: rgba(108,114,248,0.15);
+    color: #8b91ff;
+    border: 1px solid rgba(108,114,248,0.3);
+  }
+  .deal-type-badge.deal {
+    background: rgba(34,197,94,0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34,197,94,0.25);
+  }
+
+  .card-title {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .discount-tag {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--success);
+  }
+
+  /* ── Code box ── */
+  .code-box {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .code-text {
+    flex: 1;
+    padding: 9px 14px;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #7dd3fc;
+    user-select: all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .copy-btn {
+    padding: 9px 14px;
+    background: rgba(125,211,252,0.1);
+    border: none;
+    border-left: 1px solid var(--code-border);
+    color: #7dd3fc;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .copy-btn:hover { background: rgba(125,211,252,0.18); }
+  .copy-btn.copied { color: var(--success); background: rgba(34,197,94,0.1); }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .source-tag {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .view-link {
+    font-size: 11.5px;
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+  }
+  .view-link:hover { opacity: 1; }
+
+  /* ── Empty / Loading states ── */
+  .empty-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state p { font-size: 15px; margin-bottom: 8px; }
+  .empty-state small { font-size: 13px; }
+
+  /* ── Loading overlay ── */
+  #loadingBar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), #a78bfa, var(--accent));
+    background-size: 200% 100%;
+    animation: slide 1.2s linear infinite;
+    z-index: 9999;
+  }
+  @keyframes slide { to { background-position: -200% 0; } }
+
+  /* ── Status toast ── */
+  #toast {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 13.5px;
+    color: var(--text);
+    z-index: 9999;
+    animation: fadeIn 0.2s ease;
+    max-width: 280px;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    header, .controls, .stats-bar, .grid { padding: 0 16px; }
+    header { padding-top: 20px; }
+    .grid { margin-top: 16px; grid-template-columns: 1fr; }
+    .header-left h1 { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loadingBar"></div>
+<div id="toast"></div>
+
+<header>
+  <div class="header-left">
+    <h1>🏷️ Deal Finder</h1>
+    <p>Live coupon codes &amp; promo offers from top retailers</p>
+  </div>
+  <div class="header-right">
+    <div class="last-updated" id="lastUpdated">—</div>
+    <button id="refreshBtn" onclick="triggerScrape()">
+      <svg id="refreshIcon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path d="M1 4v6h6M23 20v-6h-6"/>
+        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
+      </svg>
+      Refresh Deals
+    </button>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search deals, codes, retailers…" oninput="renderDeals()">
+  </div>
+
+  <div class="tabs" id="categoryTabs">
+    <button class="tab active" data-cat="all" onclick="setCategory(this)">All</button>
+    <button class="tab" data-cat="big-box" onclick="setCategory(this)">🛒 Big-box</button>
+    <button class="tab" data-cat="fashion" onclick="setCategory(this)">👗 Fashion</button>
+    <button class="tab" data-cat="tech" onclick="setCategory(this)">💻 Tech</button>
+    <button class="tab" data-cat="food" onclick="setCategory(this)">🍔 Food</button>
+  </div>
+
+  <div class="type-filter">
+    <button class="type-btn active" data-type="all" onclick="setType(this)">All types</button>
+    <button class="type-btn" data-type="code" onclick="setType(this)">🎟 Codes only</button>
+    <button class="type-btn" data-type="deal" onclick="setType(this)">🏷 Deals only</button>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat" id="statTotal">Loading…</div>
+  <div class="stat" id="statCodes"></div>
+  <div class="stat" id="statRetailers"></div>
+</div>
+
+<div class="grid" id="dealsGrid"></div>
+
+<script>
+let allDeals = [];
+let activeCategory = "all";
+let activeType = "all";
+let pollingTimer = null;
+
+// ── Data loading ─────────────────────────────────────────────────────────────
+
+async function loadDeals() {
+  try {
+    const res = await fetch("/api/deals");
+    const data = await res.json();
+    allDeals = data.deals || [];
+    if (data.last_updated) {
+      const d = new Date(data.last_updated);
+      document.getElementById("lastUpdated").innerHTML =
+        `Updated ${d.toLocaleDateString()} ${d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}`;
+    }
+    renderDeals();
+  } catch (e) {
+    console.error("Failed to load deals:", e);
+  }
+}
+
+// ── Scrape trigger ────────────────────────────────────────────────────────────
+
+async function triggerScrape() {
+  const btn = document.getElementById("refreshBtn");
+  const icon = document.getElementById("refreshIcon");
+  btn.disabled = true;
+  icon.classList.add("spin");
+  document.getElementById("loadingBar").style.display = "block";
+  showToast("⏳ Scraping deals — this takes ~30 seconds…");
+
+  try {
+    await fetch("/api/scrape", { method: "POST" });
+    startPolling();
+  } catch (e) {
+    showToast("❌ Could not start scrape. Is the server running?");
+    resetBtn();
+  }
+}
+
+function startPolling() {
+  clearInterval(pollingTimer);
+  pollingTimer = setInterval(async () => {
+    try {
+      const res = await fetch("/api/status");
+      const status = await res.json();
+      if (!status.running) {
+        clearInterval(pollingTimer);
+        await loadDeals();
+        resetBtn();
+        showToast(`✅ ${status.message}`);
+      }
+    } catch (e) { /* keep polling */ }
+  }, 2000);
+}
+
+function resetBtn() {
+  const btn = document.getElementById("refreshBtn");
+  const icon = document.getElementById("refreshIcon");
+  btn.disabled = false;
+  icon.classList.remove("spin");
+  document.getElementById("loadingBar").style.display = "none";
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+
+function setCategory(el) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  activeCategory = el.dataset.cat;
+  renderDeals();
+}
+
+function setType(el) {
+  document.querySelectorAll(".type-btn").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  activeType = el.dataset.type;
+  renderDeals();
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+
+function renderDeals() {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  const grid = document.getElementById("dealsGrid");
+
+  let filtered = allDeals.filter(d => {
+    const catOk = activeCategory === "all" || d.category === activeCategory;
+    const typeOk = activeType === "all" || d.type === activeType;
+    const searchOk = !query || [d.retailer, d.description, d.code, d.discount]
+      .some(v => (v || "").toLowerCase().includes(query));
+    return catOk && typeOk && searchOk;
+  });
+
+  // Update stats
+  const codes = filtered.filter(d => d.type === "code").length;
+  const retailers = new Set(filtered.map(d => d.retailer)).size;
+  document.getElementById("statTotal").innerHTML = `<strong>${filtered.length}</strong> deals shown`;
+  document.getElementById("statCodes").innerHTML = `<strong>${codes}</strong> with promo codes`;
+  document.getElementById("statRetailers").innerHTML = `across <strong>${retailers}</strong> retailers`;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">${allDeals.length === 0 ? "🔄" : "🔍"}</div>
+        <p>${allDeals.length === 0
+          ? "No deals cached yet"
+          : "No deals match your filters"}</p>
+        <small>${allDeals.length === 0
+          ? 'Click "Refresh Deals" to scrape live offers'
+          : "Try a different search or category"}</small>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(deal => cardHTML(deal)).join("");
+}
+
+function cardHTML(d) {
+  const color = d.color || "#6c72f8";
+
+  const codeBox = d.code ? `
+    <div class="code-box">
+      <span class="code-text" id="code-${d.id}">${escHtml(d.code)}</span>
+      <button class="copy-btn" id="cpbtn-${d.id}" onclick="copyCode('${d.id}','${escAttr(d.code)}')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect width="13" height="13" x="9" y="9" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Copy
+      </button>
+    </div>` : "";
+
+  const discount = d.discount ? `<div class="discount-tag">🏷 ${escHtml(d.discount)}</div>` : "";
+
+  const viewLink = d.url ? `
+    <a href="${escAttr(d.url)}" target="_blank" rel="noopener" class="view-link">
+      View deal
+      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+    </a>` : "";
+
+  return `
+    <div class="card" style="--retailer-color:${color}">
+      <div class="card-header">
+        <span class="retailer-badge">${d.icon || ""} ${escHtml(d.retailer)}</span>
+        <span class="deal-type-badge ${d.type}">${d.type === "code" ? "🎟 Code" : "🏷 Deal"}</span>
+      </div>
+      <p class="card-title">${escHtml(d.description)}</p>
+      ${discount}
+      ${codeBox}
+      <div class="card-footer">
+        <span class="source-tag">via ${escHtml(d.source)}</span>
+        ${viewLink}
+      </div>
+    </div>`;
+}
+
+// ── Copy to clipboard ─────────────────────────────────────────────────────────
+
+function copyCode(id, code) {
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById(`cpbtn-${id}`);
+    if (!btn) return;
+    btn.classList.add("copied");
+    btn.innerHTML = `
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg> Copied!`;
+    setTimeout(() => {
+      btn.classList.remove("copied");
+      btn.innerHTML = `
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect width="13" height="13" x="9" y="9" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg> Copy`;
+    }, 2000);
+  }).catch(() => {
+    // Fallback for older browsers
+    const el = document.getElementById(`code-${id}`);
+    const range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    showToast("✅ Code copied!");
+  });
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function escHtml(s) {
+  return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function escAttr(s) { return escHtml(s); }
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display = "none"; }, 4000);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+loadDeals();
+
+// If a scrape was already running (e.g. server just started), poll for it
+(async () => {
+  const res = await fetch("/api/status");
+  const s = await res.json();
+  if (s.running) {
+    const btn = document.getElementById("refreshBtn");
+    const icon = document.getElementById("refreshIcon");
+    btn.disabled = true;
+    icon.classList.add("spin");
+    document.getElementById("loadingBar").style.display = "block";
+    showToast("⏳ Initial scrape in progress…");
+    startPolling();
+  }
+})();
+</script>
+</body>
+</html>
