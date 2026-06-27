@@ -608,7 +608,7 @@
             
             try {
                 const res = await fetch('/api/deals');
-                const deals = await res.json();
+                const json = await res.json(); const deals = json.deals || json;
                 allDeals = deals;
                 renderFilters(deals);
                 renderDeals(deals);
