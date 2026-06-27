@@ -81,6 +81,55 @@ def deal_id(*parts):
     return hashlib.md5("-".join(str(p) for p in parts).encode()).hexdigest()[:12]
 
 
+
+
+def normalize_retailer_key(name):
+    """Normalize a retailer name to a consistent lowercase key."""
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def build_deal(retailer, code, description, discount, source, url, deal_type=None):
+    """Build a normalized deal dictionary with all required fields.
+
+    Every scraper should use this to ensure consistent deal shape.
+    """
+    if deal_type is None:
+        deal_type = "code" if code else "deal"
+    return {
+        "id": deal_id(retailer["name"], description[:40] if description else ""),
+        "retailer": retailer["name"],
+        "category": retailer.get("category", ""),
+        "color": retailer.get("color", "#333333"),
+        "icon": retailer.get("icon", ""),
+        "code": code or "",
+        "description": description or "",
+        "discount": discount or "",
+        "type": deal_type,
+        "source": source,
+        "url": url or "",
+    }
+
+
+def decorate_deal(deal):
+    """Add computed/derived fields to a deal."""
+    deal.setdefault("retailer_key", normalize_retailer_key(deal.get("retailer", "")))
+    return deal
+
+
+def validate_deal(deal):
+    """Validate that a deal has the minimum required fields.
+
+    Returns True if valid, False otherwise.
+    """
+    required = ("id", "retailer", "description", "source", "url")
+    for field in required:
+        if not deal.get(field):
+            return False
+    if not deal.get("code") and not deal.get("description"):
+        return False
+    return True
+
+
 def load_deals():
     if os.path.exists(DEALS_FILE):
         try:
@@ -145,19 +194,18 @@ def scrape_couponfollow(retailer):
             el.select_one("p, [class*='desc']")
         )
         discount = el.select_one(".discount, .badge, [class*='discount'], [class*='saving'], [class*='off']")
-        deals.append({
-            "id": deal_id(retailer["name"], code),
-            "retailer": retailer["name"],
-            "category": retailer["category"],
-            "color": retailer["color"],
-            "icon": retailer["icon"],
-            "code": code,
-            "description": desc.get_text(strip=True) if desc else "Discount offer",
-            "discount": discount.get_text(strip=True) if discount else "",
-            "type": "code",
-            "source": "CouponFollow",
-            "url": f"https://couponfollow.com/site/{retailer['domain']}",
-        })
+        deal = build_deal(
+            retailer=retailer,
+            code=code,
+            description=desc.get_text(strip=True) if desc else "Discount offer",
+            discount=discount.get_text(strip=True) if discount else "",
+            source="CouponFollow",
+            url=f"https://couponfollow.com/site/{retailer['domain']}",
+            deal_type="code",
+        )
+        deal = decorate_deal(deal)
+        if validate_deal(deal):
+            deals.append(deal)
         if len(deals) >= 6:
             break
 
@@ -187,19 +235,17 @@ def scrape_couponfollow(retailer):
             if not description:
                 continue
 
-            deals.append({
-                "id": deal_id(retailer["name"], description[:40]),
-                "retailer": retailer["name"],
-                "category": retailer["category"],
-                "color": retailer["color"],
-                "icon": retailer["icon"],
-                "code": code,
-                "description": description,
-                "discount": discount.get_text(strip=True) if discount else "",
-                "type": "code" if code else "deal",
-                "source": "CouponFollow",
-                "url": f"https://couponfollow.com/site/{retailer['domain']}",
-            })
+            deal = build_deal(
+                retailer=retailer,
+                code=code,
+                description=description,
+                discount=discount.get_text(strip=True) if discount else "",
+                source="CouponFollow",
+                url=f"https://couponfollow.com/site/{retailer['domain']}",
+            )
+            deal = decorate_deal(deal)
+            if validate_deal(deal):
+                deals.append(deal)
 
     print(f"  CouponFollow → {retailer['name']}: {len(deals)} deals")
     return deals
@@ -221,19 +267,18 @@ def scrape_savings_com(retailer):
             continue
         desc = el.select_one("h3, h2, .title, [class*='title'], p")
         discount = el.select_one("[class*='discount'], [class*='saving'], [class*='badge']")
-        deals.append({
-            "id": deal_id(retailer["name"], code, "savings"),
-            "retailer": retailer["name"],
-            "category": retailer["category"],
-            "color": retailer["color"],
-            "icon": retailer["icon"],
-            "code": code,
-            "description": desc.get_text(strip=True) if desc else "Special offer",
-            "discount": discount.get_text(strip=True) if discount else "",
-            "type": "code",
-            "source": "Savings.com",
-            "url": url,
-        })
+        deal = build_deal(
+            retailer=retailer,
+            code=code,
+            description=desc.get_text(strip=True) if desc else "Special offer",
+            discount=discount.get_text(strip=True) if discount else "",
+            source="Savings.com",
+            url=url,
+            deal_type="code",
+        )
+        deal = decorate_deal(deal)
+        if validate_deal(deal):
+            deals.append(deal)
         if len(deals) >= 4:
             break
 
@@ -260,19 +305,18 @@ def scrape_couponcabin(retailer):
         if not code or len(code) > 25:
             continue
         desc = el.select_one("h3, h2, .title, p")
-        deals.append({
-            "id": deal_id(retailer["name"], code, "cabin"),
-            "retailer": retailer["name"],
-            "category": retailer["category"],
-            "color": retailer["color"],
-            "icon": retailer["icon"],
-            "code": code,
-            "description": desc.get_text(strip=True) if desc else "Promo code",
-            "discount": "",
-            "type": "code",
-            "source": "CouponCabin",
-            "url": url,
-        })
+        deal = build_deal(
+            retailer=retailer,
+            code=code,
+            description=desc.get_text(strip=True) if desc else "Promo code",
+            discount="",
+            source="CouponCabin",
+            url=url,
+            deal_type="code",
+        )
+        deal = decorate_deal(deal)
+        if validate_deal(deal):
+            deals.append(deal)
         if len(deals) >= 4:
             break
 
@@ -330,19 +374,17 @@ def scrape_rss_feed(feed_url, source_name, max_items=60):
         disc_match = re.search(r"(\$?\d+%?\s*off|\d+%\s*off)", title, re.IGNORECASE)
         discount = disc_match.group(0).title() if disc_match else ""
 
-        deals.append({
-            "id": deal_id(retailer["name"], title[:50], source_name),
-            "retailer": retailer["name"],
-            "category": retailer["category"],
-            "color": retailer["color"],
-            "icon": retailer["icon"],
-            "code": code,
-            "description": title[:120],
-            "discount": discount,
-            "type": "code" if code else "deal",
-            "source": source_name,
-            "url": link,
-        })
+        deal = build_deal(
+            retailer=retailer,
+            code=code,
+            description=title[:120],
+            discount=discount,
+            source="Unknown",
+            url=link,
+        )
+        deal = decorate_deal(deal)
+        if validate_deal(deal):
+            deals.append(deal)
 
     print(f"  RSS ({source_name}): matched {len(deals)} deals to retailers")
     return deals
