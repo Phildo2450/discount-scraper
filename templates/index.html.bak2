@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M0RW89NDRW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-M0RW89NDRW');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deal Finder | Hot Discounts & Coupons</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(131, 56, 236, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header / Hero Section */
+        .hero {
+            position: relative;
+            padding: 60px 20px 80px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            margin-bottom: -40px;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: sparkle 20s linear infinite;
+        }
+
+        @keyframes sparkle {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, #f0e6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        /* Controls Section */
+        .controls {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.6);
+            transform: translateY(-3px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Filter Pills */
+        .filters {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 20px 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .filter-pill:hover, .filter-pill.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .status-text span {
+            color: #4ecdc4;
+            font-weight: 600;
+        }
+
+        /* Deals Grid */
+        .deals-container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        /* Deal Card */
+        .deal-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .deal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f093fb, #f5576c, #feca57);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .deal-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .deal-card:hover::before {
+            opacity: 1;
+        }
+
+        .deal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .deal-retailer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .retailer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--card-color, #667eea), rgba(255,255,255,0.1));
+        }
+
+        .retailer-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .deal-type-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-code {
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+        }
+
+        .badge-sale {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .deal-discount {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #feca57, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .deal-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .deal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .deal-code {
+            font-family: 'Montserrat', sans-serif;
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px dashed rgba(78, 205, 196, 0.5);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4ecdc4;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .deal-code:hover {
+            background: rgba(78, 205, 196, 0.2);
+            border-color: #4ecdc4;
+        }
+
+        .deal-source {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+        }
+
+        .deal-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #f093fb;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .deal-link:hover {
+            color: #fff;
+            gap: 8px;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #f093fb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .deals-container {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                padding: 30px 15px 15px;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(#667eea, #764ba2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Deal Finder</h1>
+            <p>Discover incredible discounts from top brands. Fresh deals updated every 6 hours.</p>
+            <span class="hero-badge">Powered by Smart Scraping</span>
+        </div>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="btn btn-primary" onclick="scrapeDeals()">
+            Refresh Deals
+        </button>
+        <button class="btn btn-secondary" onclick="loadDeals()">
+            Load Cached
+        </button>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="filters" id="filters"></div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-text" id="status">Ready to discover deals</div>
+        <div class="status-text"><span id="deal-count">0</span> deals found</div>
+    </div>
+
+    <!-- Deals Grid -->
+    <div class="deals-container" id="deals-grid"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const dealsGrid = document.getElementById('deals-grid');
+        const statusEl = document.getElementById('status');
+        const dealCountEl = document.getElementById('deal-count');
+        const filtersEl = document.getElementById('filters');
+        const toastEl = document.getElementById('toast');
+        let allDeals = [];
+        let activeFilter = 'all';
+
+        function showToast(message) {
+            toastEl.textContent = message;
+            toastEl.classList.add('show');
+            setTimeout(() => toastEl.classList.remove('show'), 3000);
+        }
+
+        function renderFilters(deals) {
+            const retailers = [...new Set(deals.map(d => d.retailer))].sort();
+            let html = '<span class="filter-pill active" onclick="filterDeals(\'all\')">All</span>';
+            retailers.forEach(r => {
+                html += `<span class="filter-pill" onclick="filterDeals('${r}')">${r}</span>`;
+            });
+            filtersEl.innerHTML = html;
+        }
+
+        function filterDeals(retailer) {
+            activeFilter = retailer;
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            const filtered = retailer === 'all' ? allDeals : allDeals.filter(d => d.retailer === retailer);
+            renderDeals(filtered);
+        }
+
+        function renderDeals(deals) {
+            if (!deals || deals.length === 0) {
+                dealsGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon">&#x1f6cd;</div>
+                        <h3>No deals yet</h3>
+                        <p>Click "Refresh Deals" to fetch the latest discounts!</p>
+                    </div>`;
+                dealCountEl.textContent = '0';
+                return;
+            }
+
+            dealCountEl.textContent = deals.length;
+            dealsGrid.innerHTML = deals.map((deal, i) => `
+                <div class="deal-card" style="--card-color: ${deal.color || '#667eea'}; animation-delay: ${i * 0.05}s">
+                    <div class="deal-header">
+                        <div class="deal-retailer">
+                            <div class="retailer-icon" style="background: linear-gradient(135deg, ${deal.color || '#667eea'}, rgba(255,255,255,0.2))">
+                                ${deal.icon || '&#x1f6d2;'}
+                            </div>
+                            <span class="retailer-name">${deal.retailer || 'Unknown'}</span>
+                        </div>
+                        <span class="deal-type-badge ${deal.type === 'code' ? 'badge-code' : 'badge-sale'}">
+                            ${deal.type || 'deal'}
+                        </span>
+                    </div>
+                    <div class="deal-discount">${deal.discount || 'Special Offer'}</div>
+                    <p class="deal-description">${deal.description || 'Check out this amazing deal!'}</p>
+                    <div class="deal-footer">
+                        ${deal.code ? `<span class="deal-code" onclick="copyCode('${deal.code}')" title="Click to copy">${deal.code}</span>` : '<span class="deal-source">No code needed</span>'}
+                        ${deal.url ? `<a href="${deal.url}" target="_blank" class="deal-link">Get Deal &rarr;</a>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('Code copied: ' + code);
+            }).catch(() => {
+                showToast('Code: ' + code);
+            });
+        }
+
+        async function loadDeals() {
+            statusEl.innerHTML = '<span style="animation: pulse 1s infinite">Loading deals...</span>';
+            dealsGrid.innerHTML = '<div class="loading" style="grid-column:1/-1;"><div class="loading-spinner"></div><p>Fetching cached deals...</p></div>';
+            
+            try {
+                const res = await fetch('/api/deals');
+                const json = await res.json(); const deals = json.deals || json;
+                allDeals = deals;
+                renderFilters(deals);
+                renderDeals(deals);
+                statusEl.innerHTML = 'Last loaded: <span>' + new Date().toLocaleTimeString() + '</span>';
+                showToast(`Loaded ${deals.length} deals!`);
+            } catch (err) {
+                statusEl.textContent = 'Error loading deals';
+                dealsGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">&#x26a0;</div><h3>Connection Error</h3><p>Could not fetch deals. Try again later.</p></div>';
+            }
+        }
+
+        async function scrapeDeals() {
+            statusEl.innerHTML = '<span style="animation: pulse 1s infinite">Scraping fresh deals...</span>';
+            dealsGrid.innerHTML = '<div class="loading" style="grid-column:1/-1;"><div class="loading-spinner"></div><p>Hunting for the best deals...</p></div>';
+            
+            try {
+                const res = await fetch('/api/scrape', { method: 'POST' });
+                const data = await res.json();
+                if (data.deals) {
+                    allDeals = data.deals;
+                    renderFilters(data.deals);
+                    renderDeals(data.deals);
+                    statusEl.innerHTML = 'Scraped at: <span>' + new Date().toLocaleTimeString() + '</span>';
+                    showToast(`Found ${data.deals.length} fresh deals!`);
+                } else {
+                    statusEl.textContent = data.message || 'Scraping complete';
+                    loadDeals();
+                }
+            } catch (err) {
+                statusEl.textContent = 'Error during scraping';
+                showToast('Scraping failed - try again');
+                loadDeals();
+            }
+        }
+
+        // Auto-load deals on page load
+        document.addEventListener('DOMContentLoaded', loadDeals);
+    </script>
+</body>
+</html>

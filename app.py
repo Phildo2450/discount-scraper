@@ -471,7 +471,18 @@ def index():
 
 @app.route("/api/deals")
 def api_deals():
-    return jsonify(load_deals())
+    data = load_deals()
+    # Build retailer domain lookup
+    domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
+    # Ensure each deal has a url field pointing to the retailer website
+    deals = data.get("deals", []) if isinstance(data, dict) else []
+    for deal in deals:
+        if not deal.get("url"):
+            retailer = deal.get("retailer", "")
+            domain = domain_map.get(retailer.lower(), "")
+            if domain:
+                deal["url"] = f"https://www.{domain}"
+    return jsonify(data)
 
 
 @app.route("/api/scrape", methods=["POST"])
@@ -534,6 +545,12 @@ def api_deals_trending():
         match = _re.search(r"(\d+)%", d.get("description", ""))
         return int(match.group(1)) if match else 0
     trending = sorted(deals, key=get_discount, reverse=True)[:10]
+    domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
+    for deal in trending:
+        if not deal.get("url"):
+            domain = domain_map.get(deal.get("retailer", "").lower(), "")
+            if domain:
+                deal["url"] = f"https://www.{domain}"
     return jsonify(trending)
 
 
@@ -542,10 +559,20 @@ def api_deals_featured():
     data = load_deals()
     deals = data.get("deals", [])
     if deals:
+        domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
         for deal in deals:
             if deal.get("code"):
+                if not deal.get("url"):
+                    domain = domain_map.get(deal.get("retailer", "").lower(), "")
+                    if domain:
+                        deal["url"] = f"https://www.{domain}"
                 return jsonify(deal)
-        return jsonify(deals[0])
+        deal = deals[0]
+        if not deal.get("url"):
+            domain = domain_map.get(deal.get("retailer", "").lower(), "")
+            if domain:
+                deal["url"] = f"https://www.{domain}"
+        return jsonify(deal)
     return jsonify(None)
 
 
