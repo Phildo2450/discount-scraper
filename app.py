@@ -499,6 +499,65 @@ def api_retailers():
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+
+@app.route("/api/categories")
+def api_categories():
+    data = load_deals()
+    deals = data.get("deals", [])
+    cat_meta = {
+        "services": {"color": "#8338EC", "icon": "\ud83d\udd27", "label": "Services"},
+        "electronics": {"color": "#8338EC", "icon": "\ud83d\udcfa", "label": "Electronics"},
+        "fashion": {"color": "#FF006E", "icon": "\ud83d\udc57", "label": "Fashion"},
+        "beauty": {"color": "#FF006E", "icon": "\ud83d\udc84", "label": "Beauty"},
+        "home": {"color": "#3A86FF", "icon": "\ud83c\udfe0", "label": "Home"},
+        "food": {"color": "#FB5607", "icon": "\ud83c\udf54", "label": "Food"},
+        "travel": {"color": "#8338EC", "icon": "\u2708\ufe0f", "label": "Travel"},
+        "health": {"color": "#06D6A0", "icon": "\ud83d\udc8a", "label": "Health"},
+    }
+    cat_counts = {}
+    for deal in deals:
+        cat = deal.get("category", "services").lower()
+        cat_counts[cat] = cat_counts.get(cat, 0) + 1
+    result = []
+    for cat, count in sorted(cat_counts.items(), key=lambda x: -x[1]):
+        meta = cat_meta.get(cat, {"color": "#8338EC", "icon": "\ud83c\udfaf", "label": cat.title()})
+        result.append({"category": cat, "color": meta["color"], "count": count, "icon": meta["icon"], "label": meta["label"]})
+    return jsonify(result)
+
+
+@app.route("/api/deals/trending")
+def api_deals_trending():
+    data = load_deals()
+    deals = data.get("deals", [])
+    def get_discount(d):
+        import re as _re
+        match = _re.search(r"(\d+)%", d.get("description", ""))
+        return int(match.group(1)) if match else 0
+    trending = sorted(deals, key=get_discount, reverse=True)[:10]
+    return jsonify(trending)
+
+
+@app.route("/api/deals/featured")
+def api_deals_featured():
+    data = load_deals()
+    deals = data.get("deals", [])
+    if deals:
+        for deal in deals:
+            if deal.get("code"):
+                return jsonify(deal)
+        return jsonify(deals[0])
+    return jsonify(None)
+
+
+@app.route("/api/feedback", methods=["POST"])
+def api_feedback():
+    from flask import request
+    data = request.get_json(silent=True) or {}
+    deal_id = data.get("dealId", "")
+    feedback_type = data.get("type", "")
+    return jsonify({"status": "ok", "dealId": deal_id, "type": feedback_type})
+
+
 if __name__ == "__main__":
     # Run an initial scrape if no cached data exists
     if not os.path.exists(DEALS_FILE):

@@ -1,659 +1,1620 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-M0RW89NDRW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-M0RW89NDRW');
-</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deal Finder | Hot Discounts & Coupons</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D1117">
+<meta name="description" content="Live discount codes & promo offers — 100 top retailers">
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>🏷️ Deal Drop — Live Codes & Promos</title>
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            min-height: 100vh;
-            color: #ffffff;
-            overflow-x: hidden;
-        }
+<style>
+/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pink:#FF006E; --violet:#8338EC; --blue:#3A86FF;
+  --green:#06D6A0; --gold:#FFD60A; --red:#FF3008;
+  --bg:#0D1117; --card:#1A1A2E; --card2:#16213E;
+  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+  --text:#F0F0FF; --muted:#8892A4; --muted2:#5A6478;
+  --grad:linear-gradient(135deg,var(--pink),var(--violet),var(--blue));
+  --grad-glow:linear-gradient(135deg,rgba(255,0,110,.4),rgba(131,56,236,.4),rgba(58,134,255,.4));
+  --font-display:'Montserrat',sans-serif;
+  --font:'Inter',sans-serif;
+  --r:16px; --r-sm:10px; --r-xs:6px;
+  --transition:0.22s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  padding-bottom:80px; /* bottom nav space */
+}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+input{font-family:inherit}
+img{display:block;max-width:100%}
 
-        /* Animated background particles */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(131, 56, 236, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
+/* ── Loading bar ──────────────────────────────────────────────────────────── */
+#loading-bar{
+  position:fixed;top:0;left:0;right:0;height:3px;z-index:9999;
+  background:var(--grad);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .3s ease;
+  display:none;
+}
+#loading-bar.active{display:block;animation:loadpulse 1.4s ease-in-out infinite}
+@keyframes loadpulse{
+  0%{transform:scaleX(0);opacity:1}
+  50%{transform:scaleX(.7);opacity:1}
+  100%{transform:scaleX(1);opacity:0}
+}
 
-        /* Header / Hero Section */
-        .hero {
-            position: relative;
-            padding: 60px 20px 80px;
-            text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-            margin-bottom: -40px;
-            z-index: 1;
-            overflow: hidden;
-        }
+/* ── Confetti canvas ─────────────────────────────────────────────────────── */
+#confetti-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:8888;
+}
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: sparkle 20s linear infinite;
-        }
+/* ── Toast ────────────────────────────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(26,26,46,.95);backdrop-filter:blur(20px);
+  border:1px solid var(--border2);border-radius:30px;
+  padding:12px 22px;font-size:14px;font-weight:600;
+  white-space:nowrap;z-index:7777;pointer-events:none;
+  opacity:0;transition:opacity .2s,transform .2s;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-        @keyframes sparkle {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
+/* ── Install PWA banner ───────────────────────────────────────────────────── */
+#pwa-banner{
+  display:none;position:fixed;bottom:76px;left:16px;right:16px;
+  background:rgba(26,26,46,.97);backdrop-filter:blur(20px);
+  border:1px solid var(--border2);border-radius:var(--r);
+  padding:14px 16px;z-index:6666;
+  align-items:center;gap:12px;
+}
+#pwa-banner.show{display:flex}
+#pwa-banner .icon{font-size:28px}
+#pwa-banner .text p{font-size:14px;font-weight:600}
+#pwa-banner .text small{font-size:12px;color:var(--muted)}
+#pwa-banner button{
+  margin-left:auto;background:var(--grad);color:#fff;
+  border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;
+  white-space:nowrap;
+}
+#pwa-banner-close{
+  position:absolute;top:8px;right:10px;font-size:18px;color:var(--muted);
+  background:none;border:none;cursor:pointer;
+}
 
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
+/* ── Header ───────────────────────────────────────────────────────────────── */
+header{
+  position:sticky;top:0;z-index:500;
+  background:rgba(13,17,23,.9);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  padding:12px 16px;
+}
+.header-inner{
+  max-width:1280px;margin:0 auto;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.logo{
+  font-family:var(--font-display);font-size:22px;font-weight:900;
+  background:var(--grad);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+  white-space:nowrap;flex-shrink:0;
+}
+.search-wrap{
+  flex:1;min-width:180px;max-width:420px;position:relative;
+}
+.search-wrap svg{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:var(--muted);pointer-events:none;
+}
+#searchInput{
+  width:100%;background:var(--card);border:1px solid var(--border2);
+  color:var(--text);border-radius:30px;
+  padding:9px 14px 9px 38px;font-size:14px;outline:none;
+  transition:border-color var(--transition);
+}
+#searchInput:focus{border-color:var(--violet)}
+#searchInput::placeholder{color:var(--muted)}
 
-        .hero h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, #fff, #f0e6ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeInDown 0.8s ease-out;
-        }
+.header-actions{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;transition:all var(--transition);
+}
+.icon-btn:hover{background:var(--card2);border-color:var(--violet)}
 
-        .hero p {
-            font-size: 1.2rem;
-            font-weight: 300;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 30px;
-            animation: fadeInUp 0.8s ease-out 0.2s both;
-        }
+/* category pills under header */
+.cat-pills-wrap{
+  max-width:1280px;margin:0 auto;padding:10px 16px;
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+}
+.cat-pills-wrap::-webkit-scrollbar{display:none}
+.cat-pill{
+  padding:6px 16px;border-radius:20px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted);
+  font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;
+  transition:all var(--transition);flex-shrink:0;
+}
+.cat-pill:hover{border-color:var(--violet);color:var(--text)}
+.cat-pill.active{
+  background:rgba(131,56,236,.2);border-color:var(--violet);color:#b094ff;
+}
 
-        .hero-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 8px 24px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            animation: fadeInUp 0.8s ease-out 0.4s both;
-        }
+/* ── Story bubbles ────────────────────────────────────────────────────────── */
+.stories-section{
+  padding:18px 0 10px;border-bottom:1px solid var(--border);
+}
+.stories-inner{
+  max-width:1280px;margin:0 auto;padding:0 16px;
+}
+.stories-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px}
+.stories-scroll{
+  display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;
+}
+.stories-scroll::-webkit-scrollbar{display:none}
+.story-item{
+  display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;
+}
+.story-ring{
+  width:62px;height:62px;border-radius:50%;padding:2px;
+  background:var(--grad);
+  transition:transform var(--transition),box-shadow var(--transition);
+}
+.story-ring:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(131,56,236,.5)}
+.story-avatar{
+  width:100%;height:100%;border-radius:50%;
+  background:var(--card2);border:2px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+}
+.story-name{font-size:11px;color:var(--muted);max-width:62px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-        /* Controls Section */
-        .controls {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px 20px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+.hero{
+  position:relative;overflow:hidden;
+  padding:40px 16px 50px;
+  background:radial-gradient(ellipse at 50% -20%,rgba(131,56,236,.35) 0%,transparent 70%),
+             radial-gradient(ellipse at 90% 80%,rgba(255,0,110,.2) 0%,transparent 60%),
+             var(--bg);
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 60%,var(--bg) 100%);
+  pointer-events:none;
+}
+/* animated gradient orbs */
+.hero-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;
+  animation:orbFloat 8s ease-in-out infinite;
+}
+.hero-orb.a{width:400px;height:400px;background:var(--violet);top:-100px;left:-80px;animation-delay:0s}
+.hero-orb.b{width:300px;height:300px;background:var(--pink);top:0;right:-60px;animation-delay:-3s}
+.hero-orb.c{width:250px;height:250px;background:var(--blue);bottom:-60px;left:30%;animation-delay:-5s}
+@keyframes orbFloat{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(20px,-15px) scale(1.05)}
+  66%{transform:translate(-10px,10px) scale(.95)}
+}
 
-        .btn {
-            font-family: 'Poppins', sans-serif;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+.hero-inner{max-width:1280px;margin:0 auto;position:relative;z-index:1}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,214,10,.12);border:1px solid rgba(255,214,10,.3);
+  color:var(--gold);border-radius:20px;padding:5px 14px;
+  font-size:12px;font-weight:700;letter-spacing:.3px;margin-bottom:14px;
+}
+.hero-badge .pulse{
+  width:7px;height:7px;border-radius:50%;background:var(--gold);
+  animation:pulseAnim 1.5s ease-in-out infinite;
+}
+@keyframes pulseAnim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.6)}}
 
-        .btn-primary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
-        }
+.hero h1{
+  font-family:var(--font-display);font-size:clamp(28px,5vw,56px);
+  font-weight:900;line-height:1.1;margin-bottom:12px;
+  background:linear-gradient(135deg,#fff 0%,#c8b4ff 50%,#80b3ff 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero p{font-size:16px;color:var(--muted);max-width:500px;line-height:1.6;margin-bottom:24px}
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
-        }
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:28px}
+.hero-stat{display:flex;flex-direction:column;gap:2px}
+.hero-stat .num{
+  font-family:var(--font-display);font-size:28px;font-weight:900;
+  background:var(--grad);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-stat .label{font-size:12px;color:var(--muted);font-weight:500}
 
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.3);
-            backdrop-filter: blur(5px);
-        }
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--grad);color:#fff;
+  border-radius:30px;padding:13px 28px;
+  font-size:15px;font-weight:700;
+  box-shadow:0 8px 32px rgba(131,56,236,.4);
+  transition:all var(--transition);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(131,56,236,.6)}
+.btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.06);color:var(--text);
+  border:1px solid var(--border2);border-radius:30px;padding:13px 24px;
+  font-size:15px;font-weight:600;
+  transition:all var(--transition);
+}
+.btn-secondary:hover{background:rgba(255,255,255,.1)}
 
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-            border-color: rgba(255,255,255,0.6);
-            transform: translateY(-3px);
-        }
+/* Featured deal in hero */
+.hero-featured{
+  margin-top:32px;
+  background:rgba(255,255,255,.04);backdrop-filter:blur(20px);
+  border:1px solid var(--border2);border-radius:var(--r);
+  padding:20px;max-width:480px;
+}
+.hero-featured-label{
+  font-size:11px;font-weight:700;letter-spacing:1px;
+  color:var(--gold);text-transform:uppercase;margin-bottom:10px;
+}
+.hero-featured-deal{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hero-featured-info{flex:1;min-width:180px}
+.hero-featured-info h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.hero-featured-info p{font-size:13px;color:var(--muted)}
+.hero-countdown{
+  display:flex;gap:6px;align-items:center;margin-top:10px;
+}
+.hero-countdown .seg{
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(255,255,255,.06);border-radius:var(--r-sm);padding:6px 10px;
+}
+.hero-countdown .seg .num{
+  font-family:var(--font-display);font-size:20px;font-weight:900;
+  color:var(--pink);-webkit-text-fill-color:var(--pink);
+  animation:none;
+}
+.hero-countdown .seg .unit{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.5px}
+.hero-countdown .sep{font-size:20px;font-weight:900;color:var(--violet);padding:0 2px;align-self:flex-start;padding-top:4px}
 
-        .btn:active {
-            transform: translateY(0);
-        }
+/* ── Section wrapper ──────────────────────────────────────────────────────── */
+.section{max-width:1280px;margin:0 auto;padding:28px 16px 0}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-header h2{
+  font-family:var(--font-display);font-size:20px;font-weight:900;
+  display:flex;align-items:center;gap:8px;
+}
+.fire-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(135deg,#ff6b00,#ff006e);
+  color:#fff;border-radius:20px;padding:3px 10px;
+  font-size:11px;font-weight:700;
+  animation:firePulse 2s ease-in-out infinite;
+}
+@keyframes firePulse{0%,100%{box-shadow:0 0 8px rgba(255,0,110,.4)}50%{box-shadow:0 0 20px rgba(255,0,110,.8)}}
 
-        /* Filter Pills */
-        .filters {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px 20px 30px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+.see-all{
+  font-size:13px;color:var(--violet);font-weight:600;
+  display:flex;align-items:center;gap:4px;
+  transition:opacity var(--transition);
+}
+.see-all:hover{opacity:.75}
 
-        .filter-pill {
-            padding: 8px 20px;
-            border-radius: 25px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.8);
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-        }
+/* ── Trending carousel ────────────────────────────────────────────────────── */
+.carousel-scroll{
+  display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;
+  padding-bottom:4px;
+  /* auto-scroll via JS */
+}
+.carousel-scroll::-webkit-scrollbar{display:none}
+.carousel-card{
+  flex-shrink:0;width:260px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;
+  transition:all var(--transition);cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.carousel-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--retailer-grad,var(--grad));
+}
+.carousel-card:hover{border-color:rgba(131,56,236,.5);transform:translateY(-3px)}
 
-        .filter-pill:hover, .filter-pill.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-color: transparent;
-            color: white;
-            transform: scale(1.05);
-        }
+/* ── Category grid ────────────────────────────────────────────────────────── */
+.cat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:12px;
+}
+.cat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:18px 12px;
+  text-align:center;cursor:pointer;
+  transition:all var(--transition);
+  position:relative;overflow:hidden;
+}
+.cat-card::after{
+  content:'';position:absolute;inset:0;
+  background:var(--cat-color,var(--violet));opacity:0;
+  transition:opacity var(--transition);
+}
+.cat-card:hover{transform:translateY(-3px);border-color:var(--cat-color,var(--violet))}
+.cat-card:hover::after{opacity:.08}
+.cat-card .cat-icon{font-size:28px;margin-bottom:8px}
+.cat-card .cat-label{font-size:13px;font-weight:700;color:var(--text)}
+.cat-card .cat-count{font-size:11px;color:var(--muted);margin-top:3px}
 
-        /* Status Bar */
-        .status-bar {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto 20px;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* ── Deal card ────────────────────────────────────────────────────────────── */
+.deals-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:16px;
+  padding-bottom:20px;
+}
 
-        .status-text {
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.6);
-        }
+.deal-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:20px;
+  display:flex;flex-direction:column;gap:12px;
+  position:relative;overflow:hidden;
+  transition:all var(--transition);
+  cursor:default;
+}
+.deal-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--retailer-color,var(--violet));
+}
+.deal-card:hover{
+  border-color:rgba(131,56,236,.35);
+  transform:translateY(-3px);
+  box-shadow:0 16px 40px rgba(0,0,0,.5);
+}
+/* glassmorphism on hover */
+.deal-card:hover{
+  background:linear-gradient(145deg,rgba(22,33,62,.95),rgba(26,26,46,.9));
+  backdrop-filter:blur(20px);
+}
 
-        .status-text span {
-            color: #4ecdc4;
-            font-weight: 600;
-        }
+/* Badges row */
+.card-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  border-radius:20px;padding:3px 10px;
+  font-size:11px;font-weight:700;letter-spacing:.2px;
+  white-space:nowrap;
+}
+.badge.retailer{
+  background:color-mix(in srgb,var(--retailer-color,#8338EC) 15%,transparent);
+  border:1px solid color-mix(in srgb,var(--retailer-color,#8338EC) 40%,transparent);
+  color:var(--retailer-color,#8338EC);
+}
+.badge.type-code{background:rgba(58,134,255,.15);color:#7fb3ff;border:1px solid rgba(58,134,255,.3)}
+.badge.type-deal{background:rgba(6,214,160,.12);color:#4de0c0;border:1px solid rgba(6,214,160,.25)}
+.badge.verified{background:rgba(255,214,10,.12);color:var(--gold);border:1px solid rgba(255,214,10,.3)}
+.badge.exclusive{
+  background:linear-gradient(135deg,rgba(255,0,110,.2),rgba(131,56,236,.2));
+  color:#ff80b0;border:1px solid rgba(255,0,110,.3);
+}
+.badge.trending{
+  background:linear-gradient(135deg,rgba(255,107,0,.2),rgba(255,0,110,.2));
+  color:#ff9040;border:1px solid rgba(255,107,0,.3);
+  animation:firePulse 2s ease-in-out infinite;
+}
 
-        /* Deals Grid */
-        .deals-container {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px 60px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
+/* Discount amount */
+.discount-amount{
+  font-family:var(--font-display);font-size:26px;font-weight:900;
+  background:var(--grad);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
 
-        /* Deal Card */
-        .deal-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 25px;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.6s ease-out both;
-        }
+/* Description */
+.card-desc{font-size:14px;color:var(--muted);line-height:1.45}
 
-        .deal-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #f093fb, #f5576c, #feca57);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+/* Code box */
+.code-box{
+  display:flex;align-items:stretch;overflow:hidden;
+  background:rgba(8,12,20,.6);
+  border:1px solid rgba(58,134,255,.25);border-radius:var(--r-sm);
+}
+.code-text{
+  flex:1;padding:10px 14px;
+  font-family:'SF Mono','Fira Code',monospace;
+  font-size:15px;font-weight:800;letter-spacing:2px;
+  color:#7fb3ff;user-select:all;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;
+}
+.copy-btn{
+  padding:10px 16px;
+  background:rgba(58,134,255,.12);
+  border-left:1px solid rgba(58,134,255,.2);
+  color:#7fb3ff;font-size:12px;font-weight:700;
+  display:flex;align-items:center;gap:5px;white-space:nowrap;
+  transition:background var(--transition);
+}
+.copy-btn:hover{background:rgba(58,134,255,.22)}
+.copy-btn.copied{color:var(--green);background:rgba(6,214,160,.12)}
 
-        .deal-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.08);
-        }
+/* Meta row */
+.card-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.meta-item{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
 
-        .deal-card:hover::before {
-            opacity: 1;
-        }
+/* Countdown */
+.countdown-inline{
+  display:flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:700;color:var(--pink);
+}
+.countdown-inline.urgent{animation:pulseAnim 1s ease-in-out infinite}
 
-        .deal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
+/* Success rate */
+.success-rate-wrap{display:flex;flex-direction:column;gap:5px}
+.success-rate-label{display:flex;justify-content:space-between;font-size:12px}
+.success-rate-label span:last-child{color:var(--green);font-weight:700}
+.success-bar-track{height:4px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+.success-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--violet),var(--green));transition:width .5s ease}
 
-        .deal-retailer {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+/* Vote buttons */
+.vote-row{display:flex;align-items:center;gap:8px}
+.vote-btn{
+  flex:1;padding:8px;border-radius:var(--r-xs);
+  font-size:12px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:all var(--transition);
+  border:1px solid var(--border2);background:transparent;color:var(--muted);
+}
+.vote-btn:hover.worked{background:rgba(6,214,160,.12);border-color:var(--green);color:var(--green)}
+.vote-btn:hover.didnt{background:rgba(255,48,8,.1);border-color:var(--red);color:var(--red)}
+.vote-btn.voted-yes{background:rgba(6,214,160,.15);border-color:var(--green);color:var(--green)}
+.vote-btn.voted-no{background:rgba(255,48,8,.1);border-color:var(--red);color:var(--red)}
 
-        .retailer-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            background: linear-gradient(135deg, var(--card-color, #667eea), rgba(255,255,255,0.1));
-        }
+/* Shop now button */
+.shop-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;padding:11px;border-radius:var(--r-sm);
+  background:var(--grad);color:#fff;font-size:14px;font-weight:700;
+  transition:all var(--transition);margin-top:auto;
+  box-shadow:0 4px 16px rgba(131,56,236,.3);
+}
+.shop-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(131,56,236,.5)}
 
-        .retailer-name {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            color: #fff;
-        }
+/* viewers indicator */
+.viewers{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.viewer-dot{width:5px;height:5px;border-radius:50%;background:var(--green);
+  animation:pulseAnim 2s ease-in-out infinite}
 
-        .deal-type-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+/* Skeleton cards */
+.skeleton{
+  background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:var(--r-xs);
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.deal-card.loading .skeleton-line{height:14px;border-radius:4px;margin-bottom:10px}
+.deal-card.loading .skeleton-code{height:42px;border-radius:var(--r-sm)}
 
-        .badge-code {
-            background: rgba(78, 205, 196, 0.2);
-            color: #4ecdc4;
-            border: 1px solid rgba(78, 205, 196, 0.3);
-        }
+/* Swipeable (mobile touch) */
+.deal-card{user-select:none}
+.deal-card.swiping-left{opacity:.7;transform:translateX(-40px) rotate(-2deg)}
+.deal-card.swiping-right{opacity:.7;transform:translateX(40px) rotate(2deg)}
 
-        .badge-sale {
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-            border: 1px solid rgba(255, 107, 107, 0.3);
-        }
+/* ── Bottom navigation ────────────────────────────────────────────────────── */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:400;
+  background:rgba(13,17,23,.95);backdrop-filter:blur(24px);
+  border-top:1px solid var(--border);
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px 16px;cursor:pointer;
+  transition:color var(--transition);color:var(--muted2);
+}
+.nav-item.active{color:var(--violet)}
+.nav-item svg{width:22px;height:22px}
+.nav-item span{font-size:10px;font-weight:600}
 
-        .deal-discount {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #feca57, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+/* ── Music toggle (floating) ──────────────────────────────────────────────── */
+#music-btn{
+  position:fixed;right:16px;bottom:80px;z-index:500;
+  display:flex;align-items:center;gap:8px;
+  background:rgba(131,56,236,.85);backdrop-filter:blur(12px);
+  border:1px solid rgba(131,56,236,.6);
+  border-radius:30px;padding:9px 16px;
+  font-size:14px;font-weight:700;color:#fff;
+  box-shadow:0 4px 20px rgba(131,56,236,.5);
+  transition:all var(--transition);cursor:pointer;
+  white-space:nowrap;
+}
+#music-btn:hover{transform:scale(1.05);box-shadow:0 6px 28px rgba(131,56,236,.7)}
+#music-btn .music-icon{font-size:16px}
+#music-btn .music-bars{
+  display:flex;align-items:flex-end;gap:2px;height:14px;
+}
+#music-btn .music-bars span{
+  display:block;width:3px;border-radius:2px;background:#fff;
+  transform-origin:bottom;
+}
+#music-btn .music-bars span:nth-child(1){animation:bar1 .8s ease-in-out infinite}
+#music-btn .music-bars span:nth-child(2){animation:bar2 .8s ease-in-out infinite .15s}
+#music-btn .music-bars span:nth-child(3){animation:bar3 .8s ease-in-out infinite .3s}
+@keyframes bar1{0%,100%{height:4px}50%{height:12px}}
+@keyframes bar2{0%,100%{height:10px}50%{height:4px}}
+@keyframes bar3{0%,100%{height:6px}50%{height:14px}}
+#music-btn.muted{
+  background:rgba(26,26,46,.9);border-color:var(--border2);
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+#music-btn.muted .music-bars span{animation:none;height:4px}
+@keyframes musicPulse{
+  0%,100%{box-shadow:0 4px 20px rgba(131,56,236,.5)}
+  50%{box-shadow:0 6px 28px rgba(131,56,236,.8)}
+}
 
-        .deal-description {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
+/* ── Infinity loader ──────────────────────────────────────────────────────── */
+#infinite-loader{
+  text-align:center;padding:32px;color:var(--muted);font-size:14px;
+  display:none;
+}
+#infinite-loader.active{display:block}
+.spinner{
+  width:32px;height:32px;border-radius:50%;margin:0 auto 10px;
+  border:3px solid var(--border);border-top-color:var(--violet);
+  animation:spin 0.9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-        .deal-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media(max-width:768px){
+  .bottom-nav{display:block}
+  #music-btn{bottom:72px}
+  #toast{bottom:80px}
+  .deals-grid{grid-template-columns:1fr}
+  .hero h1{font-size:28px}
+  .hero-stats{gap:16px}
+  .hero-stat .num{font-size:22px}
+  .hero-featured{max-width:100%}
+}
+@media(min-width:769px){
+  .bottom-nav{display:none}
+}
 
-        .deal-code {
-            font-family: 'Montserrat', sans-serif;
-            background: rgba(78, 205, 196, 0.1);
-            border: 1px dashed rgba(78, 205, 196, 0.5);
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #4ecdc4;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+/* ── Parallax ─────────────────────────────────────────────────────────────── */
+.parallax-layer{transition:transform .1s linear}
 
-        .deal-code:hover {
-            background: rgba(78, 205, 196, 0.2);
-            border-color: #4ecdc4;
-        }
+/* ── Just Used toast ──────────────────────────────────────────────────────── */
+.just-used-toast{
+  position:fixed;top:80px;right:16px;z-index:7000;
+  background:rgba(26,26,46,.97);backdrop-filter:blur(20px);
+  border:1px solid var(--border2);border-radius:var(--r);
+  padding:12px 16px;font-size:13px;
+  animation:slideInRight .3s ease, fadeOut .3s ease 2.7s forwards;
+  pointer-events:none;
+}
+@keyframes slideInRight{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes fadeOut{to{opacity:0;transform:translateX(60px)}}
 
-        .deal-source {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.4);
-            font-style: italic;
-        }
+/* Amazon Logo Overlay for thumbnails */
+.amazon-logo-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 48px;
+  height: 48px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  border: 1px solid rgba(255,153,0,0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.amazon-logo-overlay img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.carousel-card .amazon-logo-overlay {
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  padding: 5px;
+}
 
-        .deal-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            color: #f093fb;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .deal-link:hover {
-            color: #fff;
-            gap: 8px;
-        }
-
-        /* Loading State */
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: #f093fb;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-
-        /* Animations */
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
-            transform: translateX(150%);
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .hero p {
-                font-size: 1rem;
-            }
-            .deals-container {
-                grid-template-columns: 1fr;
-            }
-            .controls {
-                padding: 30px 15px 15px;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1a1a2e;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(#667eea, #764ba2);
-            border-radius: 4px;
-        }
-    </style>
+/* Retailer Logo Styles */
+.retailer-logo-badge {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    object-fit: contain;
+    background: white;
+    padding: 1px;
+    margin-right: 4px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.retailer-logo-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: contain;
+    background: white;
+    padding: 6px;
+    box-sizing: border-box;
+}
+.amazon-logo-overlay img, .retailer-logo-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+</style>
 </head>
 <body>
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="hero-content">
-            <h1>Deal Finder</h1>
-            <p>Discover incredible discounts from top brands. Fresh deals updated every 6 hours.</p>
-            <span class="hero-badge">Powered by Smart Scraping</span>
+
+<!-- ── Loading bar ── -->
+<div id="loading-bar"></div>
+
+<!-- ── Confetti canvas ── -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ── Toast ── -->
+<div id="toast"></div>
+
+<!-- ── PWA Install banner ── -->
+<div id="pwa-banner">
+  <div class="icon">📲</div>
+  <div class="text">
+    <p>Install Deal Drop</p>
+    <small>Add to home screen for quick access</small>
+  </div>
+  <button id="pwa-install-btn">Install</button>
+  <button id="pwa-banner-close">×</button>
+</div>
+
+<!-- ── Hidden audio (ambient) ── -->
+<audio id="ambient-audio" loop preload="auto" src="/static/ambient.mp3" autoplay></audio>
+<audio id="copy-sound" preload="none">
+  <!-- Add your audio file: static/register.mp3 -->
+</audio>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <div class="logo">🏷️ Deal Drop</div>
+
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search deals, codes, stores…" autocomplete="off">
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" id="refreshBtn" title="Refresh deals" onclick="triggerScrape()">
+        <span id="refreshIcon">🔄</span>
+      </button>
+      <button class="icon-btn" title="Saved deals" onclick="showSection('saved')">🔖</button>
+    </div>
+  </div>
+
+  <!-- Category pills -->
+  <div class="cat-pills-wrap" id="catPills">
+    <button class="cat-pill active" data-cat="" onclick="document.getElementById('searchInput').value=''; setCategoryFilter(this,'')">All</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     STORY BUBBLES
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="stories-section">
+  <div class="stories-inner">
+    <div class="stories-title">Featured Brands</div>
+    <div class="stories-scroll" id="storiesScroll"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-orb a"></div>
+  <div class="hero-orb b"></div>
+  <div class="hero-orb c"></div>
+
+  <div class="hero-inner parallax-layer" id="heroParallax">
+    <div class="hero-badge">
+      <div class="pulse"></div>
+      LIVE DEALS — UPDATING NOW
+    </div>
+
+    <h1>Score Epic<br>Deals Today 🔥</h1>
+    <p>100 top retailers. Fresh promo codes. All in one place — updated every 6 hours.</p>
+
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num" id="statDeals">—</div><div class="label">Active deals</div></div>
+      <div class="hero-stat"><div class="num" id="statCodes">—</div><div class="label">Promo codes</div></div>
+      <div class="hero-stat"><div class="num" id="statStores">100</div><div class="label">Retailers</div></div>
+    </div>
+
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="scrollToDeals()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+        Browse All Deals
+      </button>
+      <button class="btn-secondary" onclick="triggerScrape()">
+        ↻ Refresh Now
+      </button>
+    </div>
+
+    <!-- Featured deal of the day -->
+    <div class="hero-featured" id="heroFeatured" style="display:none">
+      <div class="hero-featured-label">⭐ Deal of the Day</div>
+      <div class="hero-featured-deal">
+        <div class="hero-featured-info">
+          <h3 id="featuredTitle">—</h3>
+          <p id="featuredDesc" style="font-size:13px;color:var(--muted)">—</p>
         </div>
-    </header>
+        <button class="btn-primary" id="featuredCopyBtn" style="flex-shrink:0;padding:10px 20px;font-size:14px">
+          Copy Code
+        </button>
+      </div>
+      <div class="hero-countdown" id="heroCountdown" style="margin-top:14px">
+        <span style="font-size:12px;color:var(--muted);margin-right:4px">Next refresh in</span>
+        <div class="seg"><div class="num" id="ctH">00</div><div class="unit">HRS</div></div>
+        <div class="sep">:</div>
+        <div class="seg"><div class="num" id="ctM">00</div><div class="unit">MIN</div></div>
+        <div class="sep">:</div>
+        <div class="seg"><div class="num" id="ctS">00</div><div class="unit">SEC</div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Controls -->
-    <div class="controls">
-        <button class="btn btn-primary" onclick="scrapeDeals()">
-            Refresh Deals
-        </button>
-        <button class="btn btn-secondary" onclick="loadDeals()">
-            Load Cached
-        </button>
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TRENDING CAROUSEL
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="section" id="trendingSection">
+  <div class="section-header">
+    <h2>🔥 Trending <span class="fire-badge">HOT</span></h2>
+    <a class="see-all" href="#" onclick="filterByType(''); return false">See all →</a>
+  </div>
+  <div class="carousel-scroll" id="trendingCarousel"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CATEGORY GRID
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="section" id="categorySection">
+  <div class="section-header">
+    <h2>🗂️ Categories</h2>
+  </div>
+  <div class="cat-grid" id="categoryGrid"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MAIN DEALS FEED
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="section" id="dealsFeedSection">
+  <div class="section-header" style="margin-bottom:8px">
+    <h2 id="feedTitle">💎 All Deals</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="sortSelect" onchange="reloadDeals()" style="
+        background:var(--card);border:1px solid var(--border2);color:var(--text);
+        border-radius:var(--r-xs);padding:6px 10px;font-size:13px;outline:none;cursor:pointer">
+        <option value="confidence">Best Match</option>
+        <option value="trending">Trending</option>
+        <option value="new">Newest</option>
+      </select>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="typeFilters">
+    <button class="cat-pill active" data-type="" onclick="setTypeFilter(this,'')">All</button>
+    <button class="cat-pill" data-type="code" onclick="setTypeFilter(this,'code')">🎟 Codes Only</button>
+    <button class="cat-pill" data-type="deal" onclick="setTypeFilter(this,'deal')">🏷 Deals Only</button>
+  </div>
+
+  <div class="deals-grid" id="dealsGrid"></div>
+  <div id="infinite-loader">
+    <div class="spinner"></div>
+    <div>Loading more deals…</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     BOTTOM NAV
+════════════════════════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <div class="nav-item active" onclick="showSection('home')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="focusSearch()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <span>Search</span>
+    </div>
+    <div class="nav-item" onclick="showSection('categories')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+      </svg>
+      <span>Categories</span>
+    </div>
+    <div class="nav-item" onclick="showSection('saved')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Saved</span>
+    </div>
+    <div class="nav-item" onclick="triggerScrape()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M1 4v6h6M23 20v-6h-6"/>
+        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
+      </svg>
+      <span>Refresh</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MUSIC BUTTON
+════════════════════════════════════════════════════════════════════════════ -->
+<button id="music-btn" title="Mute music" onclick="toggleMusic()">
+  <div class="music-bars">
+    <span style="height:8px"></span>
+    <span style="height:12px"></span>
+    <span style="height:6px"></span>
+  </div>
+  <span id="music-label">Pulse Power</span>
+</button>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let allDeals = [], page = 1, hasMore = true, isLoading = false;
+let activeCategory = '', activeType = '', activeSort = 'confidence';
+let searchDebounce = null;
+let savedDeals = JSON.parse(localStorage.getItem('savedDeals') || '[]');
+let isMusicPlaying = false;
+let deferredInstallPrompt = null;
+
+// ── PWA setup ─────────────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  setTimeout(() => document.getElementById('pwa-banner').classList.add('show'), 5000);
+});
+document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  if (outcome === 'accepted') document.getElementById('pwa-banner').classList.remove('show');
+});
+document.getElementById('pwa-banner-close').addEventListener('click', () => {
+  document.getElementById('pwa-banner').classList.remove('show');
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  await loadCategories();
+  await loadDeals(true);
+  await loadTrending();
+  loadFeatured();
+  loadStories();
+  initCountdown();
+  initInfiniteScroll();
+  initParallax();
+  initSearch();
+  checkScrapingStatus();
+}
+
+// ── Fetch helpers ─────────────────────────────────────────────────────────────
+async function apiFetch(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(r.statusText);
+  return r.json();
+}
+
+// ── Categories ────────────────────────────────────────────────────────────────
+async function loadCategories() {
+  try {
+    const cats = await apiFetch('/api/categories');
+    const pills = document.getElementById('catPills');
+    const grid = document.getElementById('categoryGrid');
+
+    // Pills
+      pills.innerHTML = '';
+      const allBtn = document.createElement('button');
+      allBtn.className = 'cat-pill active';
+      allBtn.dataset.cat = '';
+      allBtn.textContent = 'All';
+        allBtn.addEventListener('click', function() { setCategoryFilter(this, ''); });
+      pills.appendChild(allBtn);
+
+    cats.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-pill';
+      btn.dataset.cat = c.category;
+      btn.innerHTML = `${c.icon} ${c.label}`;
+      btn.onclick = () => setCategoryFilter(btn, c.category);
+      pills.appendChild(btn);
+    });
+
+    // Grid
+    cats.slice(0,8).forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'cat-card';
+      card.style.setProperty('--cat-color', c.color);
+      card.innerHTML = `
+        <div class="cat-icon">${c.icon}</div>
+        <div class="cat-label">${c.label}</div>
+        <div class="cat-count">${c.count} deals</div>`;
+      card.onclick = () => {
+        document.querySelector('.section-header h2#feedTitle') &&
+          (document.getElementById('feedTitle').textContent = `${c.icon} ${c.label} Deals`);
+        setCategoryFilter(
+          document.querySelector(`.cat-pill[data-cat="${c.category}"]`) || document.querySelector('.cat-pill'),
+          c.category
+        );
+        scrollToDeals();
+      };
+      grid.appendChild(card);
+    });
+  } catch(e) { console.error(e); }
+}
+
+// Event delegation for category pills (ensures "All" button works)
+document.getElementById('catPills').addEventListener('click', function(e) {
+    const pill = e.target.closest('.cat-pill[data-cat]');
+    if (pill) {
+        const cat = pill.dataset.cat;
+        setCategoryFilter(pill, cat);
+    }
+});
+
+
+// ── Deals feed ────────────────────────────────────────────────────────────────
+async function loadDeals(reset = false) {
+  if (isLoading || (!reset && !hasMore)) return;
+  isLoading = true;
+
+  if (reset) {
+    page = 1; hasMore = true;
+    allDeals = [];
+    document.getElementById('dealsGrid').innerHTML = skeletonHTML(6);
+  }
+
+  const loader = document.getElementById('infinite-loader');
+  if (!reset) { loader.classList.add('active'); }
+
+  try {
+    const search = document.getElementById('searchInput').value.trim();
+    let url = `/api/deals?page=${page}&limit=100&sort=${activeSort}`;
+    if (activeCategory) url += `&category=${encodeURIComponent(activeCategory)}`;
+    if (activeType)     url += `&type=${encodeURIComponent(activeType)}`;
+    if (search)         url += `&search=${encodeURIComponent(search)}`;
+
+    const data = await apiFetch(url);
+
+    if (reset) document.getElementById('dealsGrid').innerHTML = '';
+
+    if (!data.deals.length && reset) {
+      document.getElementById('dealsGrid').innerHTML = emptyStateHTML();
+    } else {
+      data.deals.forEach(d => {
+        allDeals.push(d);
+        document.getElementById('dealsGrid').insertAdjacentHTML('beforeend', dealCardHTML(d));
+      });
+    }
+
+    // Update hero stats
+    if (reset && page === 1) {
+      document.getElementById('statDeals').textContent = data.total || '—';
+      const codesCount = data.deals.filter(d=>d.type==='code').length;
+      document.getElementById('statCodes').textContent = codesCount > 0 ? `${codesCount}+` : '—';
+    }
+
+    hasMore = data.page < data.pages;
+    page++;
+    if (!hasMore) loader.classList.remove('active');
+  } catch(e) {
+    console.error(e);
+    if (reset) document.getElementById('dealsGrid').innerHTML = emptyStateHTML('error');
+  }
+
+  isLoading = false;
+  loader.classList.remove('active');
+}
+
+async function reloadDeals() {
+  activeSort = document.getElementById('sortSelect').value;
+  await loadDeals(true);
+}
+
+// ── Trending ──────────────────────────────────────────────────────────────────
+async function loadTrending() {
+  try {
+    const data = await apiFetch('/api/deals/trending');
+    const carousel = document.getElementById('trendingCarousel');
+    if (!data.deals.length) {
+      document.getElementById('trendingSection').style.display = 'none';
+      return;
+    }
+    carousel.innerHTML = data.deals.map(d => carouselCardHTML(d)).join('');
+    autoScrollCarousel();
+  } catch(e) {}
+}
+
+function autoScrollCarousel() {
+  const el = document.getElementById('trendingCarousel');
+  if (!el) return;
+  let pos = 0;
+  setInterval(() => {
+    pos += 1;
+    if (pos >= el.scrollWidth - el.clientWidth) pos = 0;
+    el.scrollLeft = pos;
+  }, 30);
+}
+
+// ── Featured deal ─────────────────────────────────────────────────────────────
+async function loadFeatured() {
+  try {
+    const data = await apiFetch('/api/deals/featured');
+    const deal = data.deal;
+    if (!deal) return;
+    document.getElementById('heroFeatured').style.display = 'block';
+    document.getElementById('featuredTitle').textContent = deal.retailer + (deal.discount ? ' — ' + deal.discount : '');
+    document.getElementById('featuredDesc').textContent = deal.description;
+    document.getElementById('featuredCopyBtn').onclick = () => copyCode(deal.code || deal.description, deal.id, deal.retailer);
+    document.getElementById('featuredCopyBtn').textContent = deal.code ? '📋 ' + deal.code : '🔗 Shop Now';
+  } catch(e) {}
+}
+
+// ── Stories ────────────────────────────────────────────────────────────────────
+async function loadStories() {
+  try {
+    const retailers = await apiFetch('/api/retailers');
+    const scroll = document.getElementById('storiesScroll');
+    retailers.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'story-item';
+      item.innerHTML = `
+        <div class="story-ring">
+          <div class="story-avatar" style="background:color-mix(in srgb,${r.color||'#8338EC'} 20%,var(--card2))">
+            ${r.domain ? '<img class="retailer-logo-avatar" src="https://www.google.com/s2/favicons?sz=128&domain=' + r.domain + '" onerror="this.style.display=\'none\'">' : (r.icon||"")}
+          </div>
+        </div>
+        <div class="story-name">${r.name}</div>`;
+      item.onclick = () => {
+        const pill = document.querySelector(`.cat-pill[data-cat="${r.category}"]`);
+            document.getElementById('searchInput').value = r.name;
+            document.querySelectorAll('.cat-pill[data-cat]').forEach(p => p.classList.remove('active'));
+            document.querySelector('.cat-pill[data-cat=""]').classList.add('active');
+            activeCategory = "";
+            loadDeals(true);
+            scrollToDeals();
+      };
+      scroll.appendChild(item);
+    });
+  } catch(e) {}
+}
+
+// ── Countdown (next refresh) ──────────────────────────────────────────────────
+function initCountdown() {
+  function tick() {
+    const now = new Date();
+    const next = new Date(now);
+    const h = now.getUTCHours();
+    const nextH = [0,6,12,18].find(x => x > h) ?? 24;
+    next.setUTCHours(nextH,0,0,0);
+    if (nextH === 24) next.setUTCDate(next.getUTCDate()+1);
+    const diff = Math.max(0, Math.floor((next - now) / 1000));
+    const hh = Math.floor(diff/3600), mm = Math.floor((diff%3600)/60), ss = diff%60;
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('ctH').textContent = pad(hh);
+    document.getElementById('ctM').textContent = pad(mm);
+    document.getElementById('ctS').textContent = pad(ss);
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+// ── Search ────────────────────────────────────────────────────────────────────
+function initSearch() {
+  document.getElementById('searchInput').addEventListener('input', () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => loadDeals(true), 400);
+  });
+}
+function focusSearch() {
+  document.getElementById('searchInput').focus();
+  document.getElementById('searchInput').scrollIntoView({behavior:'smooth'});
+}
+
+// ── Filters ────────────────────────────────────────────────────────────────────
+function setCategoryFilter(el, cat) {
+  document.querySelectorAll('.cat-pill[data-cat]').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  activeCategory = cat;
+        if (!cat) document.getElementById('searchInput').value = '';
+  document.getElementById('feedTitle').textContent = cat
+    ? `${document.querySelector(`.cat-pill[data-cat="${cat}"]`)?.textContent.trim() || cat} Deals`
+    : '💎 All Deals';
+  loadDeals(true);
+}
+
+function setTypeFilter(el, type) {
+  document.querySelectorAll('#typeFilters .cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  activeType = type;
+  loadDeals(true);
+}
+
+function scrollToDeals() {
+  document.getElementById('dealsFeedSection').scrollIntoView({behavior:'smooth'});
+}
+
+function filterByType(type) {
+  document.querySelectorAll('#typeFilters .cat-pill').forEach(p => p.classList.remove('active'));
+  const el = document.querySelector(`#typeFilters .cat-pill[data-type="${type}"]`);
+  if (el) el.classList.add('active');
+  activeType = type;
+  loadDeals(true);
+  scrollToDeals();
+}
+
+// ── Infinite scroll ────────────────────────────────────────────────────────────
+function initInfiniteScroll() {
+  const loader = document.getElementById('infinite-loader');
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && hasMore && !isLoading) loadDeals(false);
+  }, {rootMargin:'300px'});
+  observer.observe(loader);
+}
+
+// ── Parallax ──────────────────────────────────────────────────────────────────
+function initParallax() {
+  const hero = document.getElementById('heroParallax');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (hero && y < 600) hero.style.transform = `translateY(${y*0.18}px)`;
+  }, {passive:true});
+}
+
+// ── Scrape ────────────────────────────────────────────────────────────────────
+async function triggerScrape() {
+  const btn = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  btn.disabled = true; icon.textContent = '⏳';
+  document.getElementById('loading-bar').classList.add('active');
+  showToast('⏳ Refreshing deals — ~30 seconds…');
+  try {
+    await fetch('/api/scrape', {method:'POST'});
+    pollStatus();
+  } catch(e) {
+    showToast('❌ Could not reach server');
+    btn.disabled = false; icon.textContent = '🔄';
+    document.getElementById('loading-bar').classList.remove('active');
+  }
+}
+
+function pollStatus() {
+  const t = setInterval(async () => {
+    const s = await (await fetch('/api/status')).json();
+    if (!s.running) {
+      clearInterval(t);
+      document.getElementById('refreshBtn').disabled = false;
+      document.getElementById('refreshIcon').textContent = '🔄';
+      document.getElementById('loading-bar').classList.remove('active');
+      await loadDeals(true);
+      await loadTrending();
+      loadFeatured();
+      showToast(`✅ ${s.total_scraped} deals loaded!`);
+      spawnJustUsed('New deals just dropped 🎉');
+    }
+  }, 2500);
+}
+
+async function checkScrapingStatus() {
+  const s = await (await fetch('/api/status')).json();
+  if (s.running) {
+    document.getElementById('refreshBtn').disabled = true;
+    document.getElementById('refreshIcon').textContent = '⏳';
+    document.getElementById('loading-bar').classList.add('active');
+    pollStatus();
+  }
+}
+
+// ── Copy code ─────────────────────────────────────────────────────────────────
+function copyCode(code, dealId, retailer) {
+  navigator.clipboard.writeText(code).then(() => {
+    confettiBurst();
+    playSound('copy');
+    showToast(`✅ Code copied: ${code}`);
+    if (navigator.vibrate) navigator.vibrate([50,30,50]);
+
+    // Update button UI
+    const btn = document.querySelector(`[data-copy-id="${dealId}"]`);
+    if (btn) {
+      btn.classList.add('copied');
+      btn.innerHTML = `✓ Copied!`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `📋 Copy`;
+      }, 2500);
+    }
+    spawnJustUsed(`Just copied ${retailer} code!`);
+}).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = code; document.body.appendChild(el);
+    el.select(); document.execCommand('copy');
+    el.remove(); showToast(`✅ ${code} copied!`);
+    // Update button UI on fallback copy too
+    const btn = document.querySelector(`[data-copy-id="${dealId}"]`);
+    if (btn) {
+        btn.classList.add('copied');
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '📋 Copy';
+        }, 2500);
+    }
+    spawnJustUsed(`Just copied ${retailer} code!`);
+});
+}
+
+// ── Vote (worked / didn't work) ────────────────────────────────────────────────
+async function vote(dealId, worked) {
+  try {
+    const r = await fetch('/api/feedback', {
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({dealId,worked})
+    });
+    const data = await r.json();
+    // Update UI
+    const yBtn = document.querySelector(`[data-vote-yes="${dealId}"]`);
+    const nBtn = document.querySelector(`[data-vote-no="${dealId}"]`);
+    if (yBtn && nBtn) {
+      yBtn.classList.toggle('voted-yes', worked);
+      nBtn.classList.toggle('voted-no', !worked);
+      yBtn.querySelector('.vote-count') && (yBtn.querySelector('.vote-count').textContent = data.successVotes);
+      nBtn.querySelector('.vote-count') && (nBtn.querySelector('.vote-count').textContent = data.failVotes);
+    }
+    showToast(worked ? '👍 Thanks for the feedback!' : '👎 Noted — code might be expired');
+  } catch(e) {}
+}
+
+// ── Save deal ─────────────────────────────────────────────────────────────────
+function saveDeal(dealId) {
+  if (savedDeals.includes(dealId)) {
+    savedDeals = savedDeals.filter(id => id !== dealId);
+    showToast('🗑️ Removed from saved');
+  } else {
+    savedDeals.push(dealId);
+    showToast('🔖 Deal saved!');
+  }
+  localStorage.setItem('savedDeals', JSON.stringify(savedDeals));
+  const btn = document.querySelector(`[data-save-id="${dealId}"]`);
+  if (btn) btn.textContent = savedDeals.includes(dealId) ? '🔖' : '♡';
+}
+
+// ── Music toggle ───────────────────────────────────────────────────────────────
+const _audio = document.getElementById('ambient-audio');
+const _musicBtn = document.getElementById('music-btn');
+const _musicLabel = document.getElementById('music-label');
+
+function setMusicState(playing) {
+  isMusicPlaying = playing;
+  if (playing) {
+    _musicBtn.classList.remove('muted');
+    _musicBtn.title = 'Mute music';
+    _musicLabel.textContent = 'Pulse Power';
+  } else {
+    _musicBtn.classList.add('muted');
+    _musicBtn.title = 'Unmute music';
+    _musicLabel.textContent = 'Muted';
+  }
+}
+
+function toggleMusic() {
+  if (isMusicPlaying) {
+    _audio.pause();
+    setMusicState(false);
+  } else {
+    _audio.play().catch(()=>{});
+    setMusicState(true);
+  }
+}
+
+// Try autoplay immediately; browsers often block it until first interaction
+_audio.play().then(() => {
+  setMusicState(true);
+}).catch(() => {
+  // Blocked — wait for first click anywhere, then start
+  setMusicState(false);
+  const startOnInteraction = () => {
+    _audio.play().then(() => {
+      setMusicState(true);
+      document.removeEventListener('click', startOnInteraction);
+      document.removeEventListener('touchstart', startOnInteraction);
+    }).catch(()=>{});
+  };
+  document.addEventListener('click', startOnInteraction, {once:true});
+  document.addEventListener('touchstart', startOnInteraction, {once:true});
+});
+
+function playSound(type) {
+  const audio = document.getElementById('copy-sound');
+  if (!audio.src || window._muted) return;
+  audio.currentTime = 0;
+  audio.play().catch(()=>{});
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function spawnJustUsed(msg) {
+  const div = document.createElement('div');
+  div.className = 'just-used-toast';
+  div.textContent = msg;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 3200);
+}
+
+// ── Confetti ──────────────────────────────────────────────────────────────────
+(function initConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  let particles = [];
+  const COLORS = ['#FF006E','#8338EC','#3A86FF','#06D6A0','#FFD60A','#FF9500','#fff'];
+
+  function Particle(x, y) {
+    this.x = x; this.y = y;
+    this.vx = (Math.random()-0.5)*14;
+    this.vy = (Math.random()-1.5)*12;
+    this.gravity = 0.4;
+    this.color = COLORS[Math.floor(Math.random()*COLORS.length)];
+    this.w = Math.random()*10+4;
+    this.h = Math.random()*6+3;
+    this.rot = Math.random()*Math.PI*2;
+    this.rotV = (Math.random()-0.5)*0.3;
+    this.life = 1;
+    this.decay = Math.random()*0.02+0.015;
+  }
+
+  function animateConfetti() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles = particles.filter(p => p.life > 0);
+    particles.forEach(p => {
+      p.vy += p.gravity; p.x += p.vx; p.y += p.vy;
+      p.rot += p.rotV; p.life -= p.decay;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(0,p.life);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    if (particles.length) requestAnimationFrame(animateConfetti);
+  }
+
+  window.confettiBurst = function(x, y) {
+    const cx = x || canvas.width/2;
+    const cy = y || canvas.height/3;
+    for (let i=0;i<120;i++) particles.push(new Particle(cx,cy));
+    requestAnimationFrame(animateConfetti);
+  };
+})();
+
+// ── HTML generators ────────────────────────────────────────────────────────────
+function dealCardHTML(d) {
+  const saved = savedDeals.includes(d.id);
+  const successRate = d.successRate ?? (d.confidence > 1 ? 80 : null);
+  const viewers = Math.floor(Math.random()*40)+3;
+
+  return `
+  <div class="deal-card" style="--retailer-color:${d.color||'#8338EC'}">
+    ${d.domain?'<div class="amazon-logo-overlay"><img src="https://www.google.com/s2/favicons?sz=128&domain=' + d.domain + '" alt="' + (d.retailer||'') + '">' + '</div>':''}
+      <div class="card-badges">
+      <span class="badge retailer" style="--retailer-color:${d.color||'#8338EC'}">
+        ${d.domain ? '<img class="retailer-logo-badge" src="https://www.google.com/s2/favicons?sz=128&domain=' + d.domain + '" onerror="this.style.display=\'none\'">' : (d.icon||"")} ${esc(d.retailer)}
+      </span>
+      <span class="badge ${d.type==='code'?'type-code':'type-deal'}">
+        ${d.type==='code'?'🎟 Code':'🏷 Deal'}
+      </span>
+      ${d.isVerified?'<span class="badge verified">✓ Verified</span>':''}
+      ${d.isTrending?'<span class="badge trending">🔥 Hot</span>':''}
+      ${d.isExclusive?'<span class="badge exclusive">⭐ Exclusive</span>':''}
     </div>
 
-    <!-- Filter Pills -->
-    <div class="filters" id="filters"></div>
+    ${d.discount?`<div class="discount-amount">${esc(d.discount)}</div>`:''}
 
-    <!-- Status Bar -->
-    <div class="status-bar">
-        <div class="status-text" id="status">Ready to discover deals</div>
-        <div class="status-text"><span id="deal-count">0</span> deals found</div>
+    <p class="card-desc">${esc(d.description)}</p>
+
+    ${d.code?`
+    <div class="code-box">
+      <div class="code-text">${esc(d.code)}</div>
+      <button class="copy-btn" data-copy-id="${d.id}"
+        onclick="copyCode('${esc(d.code)}','${d.id}','${esc(d.retailer)}')">
+        📋 Copy
+      </button>
+    </div>`:''}
+
+    <div class="card-meta">
+      <span class="viewers"><span class="viewer-dot"></span>${viewers} viewing</span>
+      <span class="meta-item">📡 ${esc(d.source)}</span>
+      ${d.timesUsed?`<span class="meta-item">👥 ${d.timesUsed} used</span>`:''}
     </div>
 
-    <!-- Deals Grid -->
-    <div class="deals-container" id="deals-grid"></div>
+    ${successRate!==null?`
+    <div class="success-rate-wrap">
+      <div class="success-rate-label">
+        <span style="color:var(--muted);font-size:12px">Success rate</span>
+        <span>${successRate}%</span>
+      </div>
+      <div class="success-bar-track">
+        <div class="success-bar-fill" style="width:${successRate}%"></div>
+      </div>
+    </div>`:''}
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    <div class="vote-row">
+      <button class="vote-btn worked ${d.successVotes>d.failVotes?'voted-yes':''}"
+        data-vote-yes="${d.id}" onclick="vote('${d.id}',true)">
+        <span>✅</span> Worked <span class="vote-count">${d.successVotes||0}</span>
+      </button>
+      <button class="vote-btn didnt ${d.failVotes>d.successVotes?'voted-no':''}"
+        data-vote-no="${d.id}" onclick="vote('${d.id}',false)">
+        <span>❌</span> Didn't <span class="vote-count">${d.failVotes||0}</span>
+      </button>
+      <button onclick="saveDeal('${d.id}')" data-save-id="${d.id}"
+        style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);
+        border:1px solid var(--border2);font-size:16px;display:flex;align-items:center;
+        justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0"
+        title="Save">
+        ${saved?'🔖':'♡'}
+      </button>
+    </div>
 
-    <script>
-        const dealsGrid = document.getElementById('deals-grid');
-        const statusEl = document.getElementById('status');
-        const dealCountEl = document.getElementById('deal-count');
-        const filtersEl = document.getElementById('filters');
-        const toastEl = document.getElementById('toast');
-        let allDeals = [];
-        let activeFilter = 'all';
+    <a class="shop-btn" href="${esc(d.affiliateUrl||d.url||'#')}" target="_blank" rel="noopener">
+      Shop ${esc(d.retailer)} →
+    </a>
+  </div>`;
+}
 
-        function showToast(message) {
-            toastEl.textContent = message;
-            toastEl.classList.add('show');
-            setTimeout(() => toastEl.classList.remove('show'), 3000);
-        }
+function carouselCardHTML(d) {
+  return `
+  <div class="carousel-card" style="--retailer-grad:linear-gradient(135deg,${d.color||'#8338EC'},#3A86FF)"
+    onclick="copyCode('${esc(d.code||d.description)}','${d.id}','${esc(d.retailer)}')">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span style="font-size:22px">${d.icon||'🏪'}</span>
+      <div>
+        <div style="font-weight:700;font-size:14px">${esc(d.retailer)}</div>
+        <div style="font-size:11px;color:var(--muted)">${d.isTrending?'🔥 Trending':d.source}</div>
+      </div>
+      ${d.isTrending?'<span class="fire-badge" style="margin-left:auto">HOT</span>':''}
+    </div>
+    ${d.discount?`<div style="font-family:var(--font-display);font-size:22px;font-weight:900;
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;margin-bottom:6px">${esc(d.discount)}</div>`:''}
+    <p style="font-size:13px;color:var(--muted);line-height:1.4;margin-bottom:10px">${esc(d.description.slice(0,80))}…</p>
+    ${d.code?`
+    <div style="background:rgba(8,12,20,.6);border:1px solid rgba(58,134,255,.25);
+      border-radius:8px;padding:8px 12px;font-family:monospace;font-size:14px;font-weight:800;
+      letter-spacing:2px;color:#7fb3ff;text-align:center">
+      ${esc(d.code)}
+    </div>`:''}
+  </div>`;
+}
 
-        function renderFilters(deals) {
-            const retailers = [...new Set(deals.map(d => d.retailer))].sort();
-            let html = '<span class="filter-pill active" onclick="filterDeals(\'all\')">All</span>';
-            retailers.forEach(r => {
-                html += `<span class="filter-pill" onclick="filterDeals('${r}')">${r}</span>`;
-            });
-            filtersEl.innerHTML = html;
-        }
+function skeletonHTML(n) {
+  return Array(n).fill(`
+  <div class="deal-card loading" style="gap:14px">
+    <div class="skeleton skeleton-line" style="width:60%;height:18px"></div>
+    <div class="skeleton skeleton-line" style="width:35%;height:28px"></div>
+    <div class="skeleton skeleton-line" style="width:100%;height:14px"></div>
+    <div class="skeleton skeleton-line" style="width:80%;height:14px"></div>
+    <div class="skeleton skeleton-code"></div>
+    <div class="skeleton skeleton-line" style="width:100%;height:36px;border-radius:8px"></div>
+  </div>`).join('');
+}
 
-        function filterDeals(retailer) {
-            activeFilter = retailer;
-            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-            event.target.classList.add('active');
-            const filtered = retailer === 'all' ? allDeals : allDeals.filter(d => d.retailer === retailer);
-            renderDeals(filtered);
-        }
+function emptyStateHTML(type='empty') {
+  return `
+  <div style="grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted)">
+    <div style="font-size:52px;margin-bottom:16px">${type==='error'?'⚠️':'🔍'}</div>
+    <p style="font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text)">
+      ${type==='error'?'Something went wrong':'No deals found'}
+    </p>
+    <p style="font-size:14px;max-width:320px;margin:0 auto 24px">
+      ${type==='error'?'Check the server is running':'Try refreshing or changing filters'}
+    </p>
+    <button class="btn-primary" onclick="triggerScrape()" style="margin:0 auto;display:inline-flex">
+      🔄 Refresh Deals
+    </button>
+  </div>`;
+}
 
-        function renderDeals(deals) {
-            if (!deals || deals.length === 0) {
-                dealsGrid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <div class="empty-state-icon">&#x1f6cd;</div>
-                        <h3>No deals yet</h3>
-                        <p>Click "Refresh Deals" to fetch the latest discounts!</p>
-                    </div>`;
-                dealCountEl.textContent = '0';
-                return;
-            }
+// ── Escape HTML ────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
-            dealCountEl.textContent = deals.length;
-            dealsGrid.innerHTML = deals.map((deal, i) => `
-                <div class="deal-card" style="--card-color: ${deal.color || '#667eea'}; animation-delay: ${i * 0.05}s">
-                    <div class="deal-header">
-                        <div class="deal-retailer">
-                            <div class="retailer-icon" style="background: linear-gradient(135deg, ${deal.color || '#667eea'}, rgba(255,255,255,0.2))">
-                                ${deal.icon || '&#x1f6d2;'}
-                            </div>
-                            <span class="retailer-name">${deal.retailer || 'Unknown'}</span>
-                        </div>
-                        <span class="deal-type-badge ${deal.type === 'code' ? 'badge-code' : 'badge-sale'}">
-                            ${deal.type || 'deal'}
-                        </span>
-                    </div>
-                    <div class="deal-discount">${deal.discount || 'Special Offer'}</div>
-                    <p class="deal-description">${deal.description || 'Check out this amazing deal!'}</p>
-                    <div class="deal-footer">
-                        ${deal.code ? `<span class="deal-code" onclick="copyCode('${deal.code}')" title="Click to copy">${deal.code}</span>` : '<span class="deal-source">No code needed</span>'}
-                        ${deal.url ? `<a href="${deal.url}" target="_blank" class="deal-link">Get Deal &rarr;</a>` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
+// ── Section nav (mobile) ───────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navMap = {home:0,search:1,categories:2,saved:3,refresh:4};
+  const items = document.querySelectorAll('.nav-item');
+  if (items[navMap[name]]) items[navMap[name]].classList.add('active');
 
-        function copyCode(code) {
-            navigator.clipboard.writeText(code).then(() => {
-                showToast('Code copied: ' + code);
-            }).catch(() => {
-                showToast('Code: ' + code);
-            });
-        }
+  if (name==='categories') {
+    document.getElementById('categorySection').scrollIntoView({behavior:'smooth'});
+  } else if (name==='search') {
+    focusSearch();
+  } else if (name==='home') {
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if (name==='saved') {
+    activeCategory=''; activeType='';
+    const filteredIds = new Set(savedDeals);
+    // Filter deals to saved only
+    if (!filteredIds.size) { showToast('No saved deals yet'); return; }
+    document.getElementById('dealsGrid').innerHTML = '';
+    allDeals.filter(d=>filteredIds.has(d.id)).forEach(d =>
+      document.getElementById('dealsGrid').insertAdjacentHTML('beforeend', dealCardHTML(d))
+    );
+    scrollToDeals();
+  }
+}
 
-        async function loadDeals() {
-            statusEl.innerHTML = '<span style="animation: pulse 1s infinite">Loading deals...</span>';
-            dealsGrid.innerHTML = '<div class="loading" style="grid-column:1/-1;"><div class="loading-spinner"></div><p>Fetching cached deals...</p></div>';
-            
-            try {
-                const res = await fetch('/api/deals');
-                const json = await res.json(); const deals = json.deals || json;
-                allDeals = deals;
-                renderFilters(deals);
-                renderDeals(deals);
-                statusEl.innerHTML = 'Last loaded: <span>' + new Date().toLocaleTimeString() + '</span>';
-                showToast(`Loaded ${deals.length} deals!`);
-            } catch (err) {
-                statusEl.textContent = 'Error loading deals';
-                dealsGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">&#x26a0;</div><h3>Connection Error</h3><p>Could not fetch deals. Try again later.</p></div>';
-            }
-        }
-
-        async function scrapeDeals() {
-            statusEl.innerHTML = '<span style="animation: pulse 1s infinite">Scraping fresh deals...</span>';
-            dealsGrid.innerHTML = '<div class="loading" style="grid-column:1/-1;"><div class="loading-spinner"></div><p>Hunting for the best deals...</p></div>';
-            
-            try {
-                const res = await fetch('/api/scrape', { method: 'POST' });
-                const data = await res.json();
-                if (data.deals) {
-                    allDeals = data.deals;
-                    renderFilters(data.deals);
-                    renderDeals(data.deals);
-                    statusEl.innerHTML = 'Scraped at: <span>' + new Date().toLocaleTimeString() + '</span>';
-                    showToast(`Found ${data.deals.length} fresh deals!`);
-                } else {
-                    statusEl.textContent = data.message || 'Scraping complete';
-                    loadDeals();
-                }
-            } catch (err) {
-                statusEl.textContent = 'Error during scraping';
-                showToast('Scraping failed - try again');
-                loadDeals();
-            }
-        }
-
-        // Auto-load deals on page load
-        document.addEventListener('DOMContentLoaded', loadDeals);
-    </script>
+// ── Start ─────────────────────────────────────────────────────────────────────
+init();
+</script>
 </body>
 </html>
