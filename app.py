@@ -585,6 +585,12 @@ def api_feedback():
     return jsonify({"status": "ok", "dealId": deal_id, "type": feedback_type})
 
 
+
+@app.route("/manifest.json")
+def manifest():
+    return send_from_directory(".", "manifest.json", mimetype="application/manifest+json")
+
+
 if __name__ == "__main__":
     # Run an initial scrape if no cached data exists
     if not os.path.exists(DEALS_FILE):
