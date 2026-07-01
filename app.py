@@ -461,8 +461,8 @@ def scrape_all():
     seed_deals = [
         {"id": "seed_cvs_1", "retailer": "CVS", "category": "health", "color": "#CC0000", "icon": "", "code": "SAVE20CVS", "description": "20% off sitewide at CVS", "discount": "20% Off", "type": "code", "source": "CVS.com", "url": "https://www.cvs.com", "domain": "cvs.com", "isTrending": True, "isExclusive": False, "confidence": 0.95, "successVotes": 34, "failVotes": 2, "timesUsed": 89, "firstSeen": "2026-06-15T00:00:00+00:00"},
         {"id": "seed_cvs_2", "retailer": "CVS", "category": "health", "color": "#CC0000", "icon": "", "code": "HEALTH10", "description": "10% off health products at CVS", "discount": "10% Off", "type": "code", "source": "CVS.com", "url": "https://www.cvs.com", "domain": "cvs.com", "isTrending": False, "isExclusive": True, "confidence": 0.92, "successVotes": 22, "failVotes": 1, "timesUsed": 55, "firstSeen": "2026-06-20T00:00:00+00:00"},
-        {"id": "seed_macys_1", "retailer": "Macys", "category": "fashion", "color": "#E21A2C", "icon": "", "code": "SHOP1521", "description": "15% off at Macys", "discount": "15% Off", "type": "code", "source": "Macys.com", "url": "https://www.macys.com", "domain": "macys.com", "isTrending": True, "isExclusive": False, "confidence": 0.97, "successVotes": 41, "failVotes": 3, "timesUsed": 140, "firstSeen": "2026-06-01T00:00:00+00:00"},
-        {"id": "seed_macys_2", "retailer": "Macys", "category": "fashion", "color": "#E21A2C", "icon": "", "code": "STYLE25", "description": "25% off fashion at Macys", "discount": "25% Off", "type": "code", "source": "Macys.com", "url": "https://www.macys.com", "domain": "macys.com", "isTrending": False, "isExclusive": True, "confidence": 0.94, "successVotes": 28, "failVotes": 2, "timesUsed": 76, "firstSeen": "2026-06-10T00:00:00+00:00"},
+        {"id": "seed_macys_1", "retailer": "Macys", "category": "fashion", "color": "#E21A2C", "icon": "", "code": "FRIEND", "description": "15% off at Macys", "discount": "15-30% Off", "type": "code", "source": "Macys.com", "url": "https://www.macys.com", "domain": "macys.com", "isTrending": True, "isExclusive": False, "confidence": 0.97, "successVotes": 41, "failVotes": 3, "timesUsed": 140, "firstSeen": "2026-06-01T00:00:00+00:00"},
+        {"id": "seed_macys_2", "retailer": "Macys", "category": "fashion", "color": "#E21A2C", "icon": "", "code": "LOW50", "description": "25% off fashion at Macys", "discount": "$20 Off $50+", "type": "code", "source": "Macys.com", "url": "https://www.macys.com", "domain": "macys.com", "isTrending": False, "isExclusive": True, "confidence": 0.94, "successVotes": 28, "failVotes": 2, "timesUsed": 76, "firstSeen": "2026-06-10T00:00:00+00:00"},
     ]
     add_deals(seed_deals)
 
@@ -499,7 +499,7 @@ def api_deals():
                 deal["url"] = f"https://www.{domain}"
         # Fix Macy's code: BEST1521 should be SHOP1521
         if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
-            deal["code"] = "SHOP1521"
+            deal["code"] = "FRIEND"
     return jsonify(data)
 
 
@@ -587,7 +587,7 @@ def api_deals_featured():
                     if not deal.get("url"):
                         deal["url"] = f"https://www.{domain}"
                 if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
-                    deal["code"] = "SHOP1521"
+                    deal["code"] = "FRIEND"
                 return jsonify(deal)
         deal = deals[0]
         if not deal.get("url"):
