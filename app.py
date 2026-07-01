@@ -569,6 +569,7 @@ def scrape_all():
     return validated_deals
 
 
+@app.route("/")
 def index():
     return render_template("index.html")
 
