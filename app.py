@@ -43,6 +43,8 @@ RETAILERS = [
     {"name": "DoorDash",  "domain": "doordash.com",       "slug": "doordash",  "category": "food",     "color": "#FF3008", "icon": "🚪"},
     {"name": "Grubhub",   "domain": "grubhub.com",        "slug": "grubhub",   "category": "food",     "color": "#F63440", "icon": "🍔"},
     {"name": "Uber Eats", "domain": "ubereats.com",       "slug": "uber-eats", "category": "food",     "color": "#06C167", "icon": "🛵"},
+    {"name": "CVS",         "domain": "cvs.com",            "color": "#CC0000", "icon": "\U0001f48a", "category": "health",  "slug": "cvs"},
+    {"name": "Macys",       "domain": "macys.com",          "color": "#E21A2C", "icon": "\U0001f6cd", "category": "fashion", "slug": "macys"},
 ]
 
 RETAILER_KEYWORDS = {r["name"]: r for r in RETAILERS}
@@ -57,6 +59,8 @@ KEYWORD_MAP = {
     "doordash": "DoorDash", "door dash": "DoorDash",
     "grubhub": "Grubhub",
     "uber eats": "Uber Eats", "ubereats": "Uber Eats",
+    "cvs": "CVS", "cvs pharmacy": "CVS",
+    "macys": "Macys", "macy's": "Macys", "macys.com": "Macys",
 }
 
 HEADERS = {
@@ -477,11 +481,15 @@ def api_deals():
     # Ensure each deal has a url field pointing to the retailer website
     deals = data.get("deals", []) if isinstance(data, dict) else []
     for deal in deals:
-        if not deal.get("url"):
-            retailer = deal.get("retailer", "")
-            domain = domain_map.get(retailer.lower(), "")
-            if domain:
+        retailer = deal.get("retailer", "")
+        domain = domain_map.get(retailer.lower(), "")
+        if domain:
+            deal["domain"] = domain
+            if not deal.get("url"):
                 deal["url"] = f"https://www.{domain}"
+        # Fix Macy's code: BEST1521 should be SHOP1521
+        if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
+            deal["code"] = "SHOP1521"
     return jsonify(data)
 
 
@@ -562,10 +570,14 @@ def api_deals_featured():
         domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
         for deal in deals:
             if deal.get("code"):
-                if not deal.get("url"):
-                    domain = domain_map.get(deal.get("retailer", "").lower(), "")
-                    if domain:
+                retailer = deal.get("retailer", "")
+                domain = domain_map.get(retailer.lower(), "")
+                if domain:
+                    deal["domain"] = domain
+                    if not deal.get("url"):
                         deal["url"] = f"https://www.{domain}"
+                if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
+                    deal["code"] = "SHOP1521"
                 return jsonify(deal)
         deal = deals[0]
         if not deal.get("url"):
