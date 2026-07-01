@@ -1099,7 +1099,7 @@ async function loadFeatured() {
     document.getElementById('heroFeatured').style.display = 'block';
     document.getElementById('featuredTitle').textContent = deal.retailer + (deal.discount ? ' — ' + deal.discount : '');
     document.getElementById('featuredDesc').textContent = deal.description;
-    document.getElementById('featuredCopyBtn').onclick = () => copyCode(deal.code || deal.description, deal.id, deal.retailer);
+    document.getElementById('featuredCopyBtn').onclick = () => copyCode(deal.code || deal.description, deal.id, deal.retailer, deal.affiliateUrl || deal.url || '#');
     document.getElementById('featuredCopyBtn').textContent = deal.code ? '📋 ' + deal.code : '🔗 Shop Now';
   } catch(e) {}
 }
@@ -1259,7 +1259,7 @@ async function checkScrapingStatus() {
 }
 
 // ── Copy code ─────────────────────────────────────────────────────────────────
-function copyCode(code, dealId, retailer) {
+function copyCode(code, dealId, retailer, url) {
   navigator.clipboard.writeText(code).then(() => {
     confettiBurst();
     playSound('copy');
@@ -1293,6 +1293,8 @@ function copyCode(code, dealId, retailer) {
         }, 2500);
     }
     spawnJustUsed(`Just copied ${retailer} code!`);
+    // Redirect to retailer website so user can verify/apply the code
+    if (url && url !== '#') { setTimeout(() => { window.open(url, '_blank'); }, 800); }
 });
 }
 
@@ -1479,7 +1481,7 @@ function dealCardHTML(d) {
     <p class="card-desc">${esc(d.description)}</p>
 
     ${d.code?`
-    <div class="code-box">
+    <div class="code-box" title="Click to copy code and visit retailer">
       <div class="code-text">${esc(d.code)}</div>
       <button class="copy-btn" data-copy-id="${d.id}"
         onclick="copyCode('${esc(d.code)}','${d.id}','${esc(d.retailer)}')">
