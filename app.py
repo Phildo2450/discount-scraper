@@ -18,6 +18,19 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, jsonify, render_template, send_from_directory
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+import logging
+
+# --- Validation & Scheduling Setup ---
+validation_logger = logging.getLogger('code_validation')
+validation_logger.setLevel(logging.INFO)
+_log_handler = logging.StreamHandler()
+_log_handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s - %(message)s'))
+validation_logger.addHandler(_log_handler)
+
+INVALID_CODES_LOG = []  # Stores codes that failed validation
+
 
 # ── Config ──────────────────────────────────────────────────────────────────
 
@@ -421,64 +434,141 @@ def scrape_retailer(retailer):
     return deals
 
 
-def scrape_all():
-    """Full scrape: all retailers + RSS feeds. Returns list of deal dicts."""
-    global _scrape_status
-    _scrape_status["running"] = True
-    _scrape_status["message"] = "Scraping coupon sites…"
-    print("\n=== Starting scrape ===")
 
-    all_deals = []
-    seen_ids = set()
-
-    def add_deals(new_deals):
-        for d in new_deals:
-            if d["id"] not in seen_ids:
-                seen_ids.add(d["id"])
-                all_deals.append(d)
-
-    # Scrape per-retailer coupon sites (max 4 parallel to be polite)
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        futures = {pool.submit(scrape_retailer, r): r for r in RETAILERS}
-        for future in as_completed(futures):
-            try:
-                add_deals(future.result())
-            except Exception as e:
-                print(f"  [ERROR] retailer scrape: {e}")
-
-    _scrape_status["message"] = "Scraping deal feeds…"
-
-    # Scrape RSS feeds sequentially (fast)
-    for feed_url, source_name in RSS_FEEDS:
-        try:
-            add_deals(scrape_rss_feed(feed_url, source_name))
-        except Exception as e:
-            print(f"  [ERROR] RSS {source_name}: {e}")
-
-    # Sort: codes first, then deals; within each group sort by retailer name
-
-    # --- Seed deals for CVS and Macys (always included) ---
-    seed_deals = [
-        {"id": "seed_cvs_1", "retailer": "CVS", "category": "health", "color": "#CC0000", "icon": "", "code": "SAVE20CVS", "description": "20% off sitewide at CVS", "discount": "20% Off", "type": "code", "source": "CVS.com", "url": "https://www.cvs.com", "domain": "cvs.com", "isTrending": True, "isExclusive": False, "confidence": 0.95, "successVotes": 34, "failVotes": 2, "timesUsed": 89, "firstSeen": "2026-06-15T00:00:00+00:00"},
-        {"id": "seed_cvs_2", "retailer": "CVS", "category": "health", "color": "#CC0000", "icon": "", "code": "HEALTH10", "description": "10% off health products at CVS", "discount": "10% Off", "type": "code", "source": "CVS.com", "url": "https://www.cvs.com", "domain": "cvs.com", "isTrending": False, "isExclusive": True, "confidence": 0.92, "successVotes": 22, "failVotes": 1, "timesUsed": 55, "firstSeen": "2026-06-20T00:00:00+00:00"},
-        {"id": "seed_macys_1", "retailer": "Macys", "category": "fashion", "color": "#E21A2C", "icon": "", "code": "FRIEND", "description": "15% off at Macys", "discount": "15-30% Off", "type": "code", "source": "Macys.com", "url": "https://www.macys.com", "domain": "macys.com", "isTrending": True, "isExclusive": False, "confidence": 0.97, "successVotes": 41, "failVotes": 3, "timesUsed": 140, "firstSeen": "2026-06-01T00:00:00+00:00"},
-        {"id": "seed_macys_2", "retailer": "Macys", "category": "fashion", "color": "#E21A2C", "icon": "", "code": "LOW50", "description": "25% off fashion at Macys", "discount": "$20 Off $50+", "type": "code", "source": "Macys.com", "url": "https://www.macys.com", "domain": "macys.com", "isTrending": False, "isExclusive": True, "confidence": 0.94, "successVotes": 28, "failVotes": 2, "timesUsed": 76, "firstSeen": "2026-06-10T00:00:00+00:00"},
+# --- Code Validation Logic ---
+def validate_code_against_aggregators(code, retailer):
+    """Cross-reference a coupon code against multiple aggregator sources.
+    
+    Checks the code against couponfollow, savings.com, and couponcabin
+    to verify the code appears on at least one other source.
+    Returns True if code is validated, False otherwise.
+    """
+    if not code or code.strip() == "":
+        return False
+    
+    aggregator_urls = [
+        f"https://couponfollow.com/site/{retailer.lower().replace(' ', '')}",
+        f"https://www.savings.com/store/{retailer.lower().replace(' ', '-')}",
+        f"https://www.couponcabin.com/coupons/{retailer.lower().replace(' ', '-')}",
+        f"https://www.retailmenot.com/view/{retailer.lower().replace(' ', '')}.com",
     ]
-    add_deals(seed_deals)
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+    
+    validations = 0
+    sources_checked = 0
+    
+    for url in aggregator_urls:
+        try:
+            resp = requests.get(url, headers=headers, timeout=8)
+            if resp.status_code == 200:
+                sources_checked += 1
+                # Check if the code appears in the page content
+                if code.upper() in resp.text.upper():
+                    validations += 1
+                    validation_logger.info(f"Code '{code}' for {retailer} FOUND on {url}")
+        except Exception as e:
+            validation_logger.debug(f"Error checking {url}: {e}")
+            continue
+    
+    # Code is valid if found on at least 1 aggregator source, or if no sources could be checked
+    # (graceful degradation - don't block codes if aggregators are down)
+    if sources_checked == 0:
+        validation_logger.warning(f"No aggregator sources reachable for {retailer} code '{code}' - allowing by default")
+        return True
+    
+    is_valid = validations >= 1
+    if not is_valid:
+        validation_logger.warning(f"Code '{code}' for {retailer} NOT found on any of {sources_checked} aggregator sources")
+    return is_valid
 
-    all_deals.sort(key=lambda d: (0 if d["type"] == "code" else 1, d["retailer"]))
 
-    data = save_deals(all_deals)
-    _scrape_status["running"] = False
-    _scrape_status["last_run"] = data["last_updated"]
-    _scrape_status["message"] = f"Done — {len(all_deals)} deals found"
-    print(f"=== Scrape complete: {len(all_deals)} deals ===\n")
-    return data
+def validate_and_filter_deals(new_deals):
+    """Validate scraped deals and return only verified ones.
+    
+    Codes are cross-referenced against aggregator sources.
+    Invalid codes are logged but not published.
+    Only validated/working codes replace current live codes.
+    """
+    global INVALID_CODES_LOG
+    validated_deals = []
+    invalid_deals = []
+    
+    for deal in new_deals:
+        code = deal.get("code", "")
+        retailer = deal.get("retailer", "")
+        
+        # Deals without codes (percentage-off links, etc.) pass through
+        if not code or code.strip() == "":
+            validated_deals.append(deal)
+            continue
+        
+        # Validate the code against aggregator sources
+        if validate_code_against_aggregators(code, retailer):
+            deal["validated"] = True
+            deal["validated_at"] = datetime.now().isoformat()
+            validated_deals.append(deal)
+        else:
+            # Log invalid code but do NOT publish
+            invalid_entry = {
+                "code": code,
+                "retailer": retailer,
+                "description": deal.get("description", ""),
+                "reason": "Not found on aggregator sources",
+                "scraped_at": datetime.now().isoformat()
+            }
+            INVALID_CODES_LOG.append(invalid_entry)
+            invalid_deals.append(deal)
+            validation_logger.info(
+                f"REJECTED: Code '{code}' for {retailer} - not validated by aggregators"
+            )
+    
+    validation_logger.info(
+        f"Validation complete: {len(validated_deals)} valid, {len(invalid_deals)} rejected"
+    )
+    return validated_deals
 
 
-# ── Flask Routes ─────────────────────────────────────────────────────────────
+def scrape_all():
+    """Scrape all retailers, validate codes, and only publish verified deals."""
+    global _scrape_status
+    _scrape_status = {"running": True, "last_run": None, "message": "Scraping in progress..."}
+    all_new_deals = []
+    
+    for retailer in RETAILERS:
+        try:
+            deals = scrape_retailer(retailer)
+            all_new_deals.extend(deals)
+        except Exception as e:
+            print(f"Error scraping {retailer['name']}: {e}")
+    
+    # Validate codes against aggregator sources before publishing
+    validation_logger.info(f"Starting validation of {len(all_new_deals)} scraped deals...")
+    validated_deals = validate_and_filter_deals(all_new_deals)
+    
+    # Only replace live codes with validated ones
+    if validated_deals:
+        current_deals = load_deals()
+        # Keep existing deals that aren't being replaced
+        existing_ids = {d.get("id") for d in validated_deals}
+        kept_deals = [d for d in current_deals if d.get("id") not in existing_ids]
+        # Merge: keep old deals + add new validated deals
+        final_deals = kept_deals + validated_deals
+        save_deals(final_deals)
+        validation_logger.info(f"Published {len(validated_deals)} validated deals, kept {len(kept_deals)} existing deals")
+    else:
+        validation_logger.warning("No validated deals to publish - keeping current live codes")
+    
+    _scrape_status = {
+        "running": False,
+        "last_run": datetime.now().isoformat(),
+        "message": f"Completed: {len(validated_deals)} validated deals published, {len(INVALID_CODES_LOG)} codes rejected"
+    }
+    return validated_deals
 
-@app.route("/")
+
 def index():
     return render_template("index.html")
 
@@ -611,6 +701,25 @@ def api_feedback():
 @app.route("/manifest.json")
 def manifest():
     return send_from_directory(".", "manifest.json", mimetype="application/manifest+json")
+
+
+
+# --- APScheduler: Automated 6-hour scraping schedule ---
+scheduler = BackgroundScheduler()
+scheduler.add_job(
+    func=scrape_all,
+    trigger=IntervalTrigger(hours=6),
+    id='scheduled_scrape',
+    name='Scrape all retailers every 6 hours',
+    replace_existing=True
+)
+scheduler.start()
+validation_logger.info("APScheduler started: scraping every 6 hours")
+
+# API endpoint to view invalid/rejected codes
+@app.route("/api/invalid-codes")
+def api_invalid_codes():
+    return jsonify(INVALID_CODES_LOG[-100:])  # Return last 100 invalid codes
 
 
 if __name__ == "__main__":
