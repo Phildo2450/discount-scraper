@@ -632,17 +632,17 @@ def api_deals():
             deal["code"] = "FRIEND"
     data["total_deals"] = len(deals)
     data["total_codes"] = sum(1 for d in deals if d.get("code"))
-   data["total"] = len(deals)
-   data["page"] = 1
-   data["pages"] = 1
-   for d in deals:
-       d["type"] = d.get("deal_type", "deal")
-       meta = next((r for r in RETAILERS if r["name"].lower() == d.get("retailer", "").lower()), {})
-       if not d.get("icon"):
-           d["icon"] = meta.get("icon", "")
-       if not d.get("color"):
-           d["color"] = meta.get("color", "#6c5ce7")
-   return jsonify(data)
+    data["total"] = len(deals)
+    data["page"] = 1
+    data["pages"] = 1
+    for d in deals:
+        d["type"] = d.get("deal_type", "deal")
+        meta = next((r for r in RETAILERS if r["name"].lower() == d.get("retailer", "").lower()), {})
+        if not d.get("icon"):
+            d["icon"] = meta.get("icon", "")
+        if not d.get("color"):
+            d["color"] = meta.get("color", "#6c5ce7")
+    return jsonify(data)
 
 
 @app.route("/api/scrape", methods=["POST"])
