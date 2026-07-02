@@ -8,7 +8,7 @@ Retailers: Amazon, Walmart, Target, Nike, H&M, Zara, ASOS, Best Buy, Newegg, B&H
 import json
 import os
 import re
-import time
+import tim
 import threading
 import hashlib
 import xml.etree.ElementTree as ET
@@ -701,11 +701,15 @@ def api_deals_trending():
     trending = sorted(deals, key=get_discount, reverse=True)[:10]
     domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
     for deal in trending:
+                       deal["isTrending"] = True
+                       r_meta = next((r for r in RETAILERS if r["name"].lower() == deal.get("retailer", "").lower()), {})
+                       deal["icon"] = r_meta.get("icon", "")
+                       deal["color"] = r_meta.get("color", "#6c5ce7")
         if not deal.get("url"):
             domain = domain_map.get(deal.get("retailer", "").lower(), "")
             if domain:
                 deal["url"] = f"https://www.{domain}"
-    return jsonify(trending)
+    return jsonify({"deals": trending})
 
 
 @app.route("/api/deals/featured")
@@ -724,14 +728,14 @@ def api_deals_featured():
                         deal["url"] = f"https://www.{domain}"
                 if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
                     deal["code"] = "FRIEND"
-                return jsonify(deal)
+                return jsonify({"deal": deal})
         deal = deals[0]
         if not deal.get("url"):
             domain = domain_map.get(deal.get("retailer", "").lower(), "")
             if domain:
                 deal["url"] = f"https://www.{domain}"
-        return jsonify(deal)
-    return jsonify(None)
+        return jsonify({"deal": deal})
+    return jsonify({"deal": None})
 
 
 @app.route("/api/feedback", methods=["POST"])
