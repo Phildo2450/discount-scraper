@@ -1352,6 +1352,7 @@ function setMusicState(playing) {
 }
 
 function toggleMusic() {
+      if (!_audio) return;
   if (isMusicPlaying) {
     _audio.pause();
     setMusicState(false);
@@ -1362,7 +1363,7 @@ function toggleMusic() {
 }
 
 // Try autoplay immediately; browsers often block it until first interaction
-_audio.play().then(() => {
+if(_audio) _audio.play().then(() => {
   setMusicState(true);
 }).catch(() => {
   // Blocked — wait for first click anywhere, then start
