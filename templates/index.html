@@ -1043,8 +1043,8 @@ async function loadDeals(reset = false) {
 
     // Update hero stats
     if (reset && page === 1) {
-      document.getElementById('statDeals').textContent = data.total || '—';
-      const codesCount = data.deals.filter(d=>d.type==='code').length;
+      document.getElementById('statDeals').textContent = (data.total_deals || data.total) || '—';
+      const codesCount = data.deals.filter(d=>(d.deal_type||d.type)==='code').length;
       document.getElementById('statCodes').textContent = codesCount > 0 ? `${codesCount}+` : '—';
     }
 
@@ -1469,8 +1469,8 @@ function dealCardHTML(d) {
       <span class="badge retailer" style="--retailer-color:${d.color||'#8338EC'}">
         ${d.domain ? '<img class="retailer-logo-badge" src="https://www.google.com/s2/favicons?sz=128&domain=' + d.domain + '" onerror="this.style.display=\'none\'">' : (d.icon||"")} ${esc(d.retailer)}
       </span>
-      <span class="badge ${d.type==='code'?'type-code':'type-deal'}">
-        ${d.type==='code'?'🎟 Code':'🏷 Deal'}
+      <span class="badge ${(d.deal_type||d.type)==='code'?'type-code':'type-deal'}">
+        ${(d.deal_type||d.type)==='code'?'🎟 Code':'🏷 Deal'}
       </span>
       ${d.isVerified?'<span class="badge verified">✓ Verified</span>':''}
       ${d.isTrending?'<span class="badge trending">🔥 Hot</span>':''}
