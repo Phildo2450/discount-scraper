@@ -8,7 +8,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?amily=Montserrat:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>🏷️ Deal Drop — Live Codes & Promos</title>
 
 <style>
@@ -692,7 +692,7 @@ header{
 </div>
 
 <!-- ── Hidden audio (ambient) ── -->
-<audio id="ambient-audio" loop preload="auto" src="/static/ambient.mp3" autoplay></audio>
+<!-- <audio id="ambient-audio" loop preload="auto" src="/static/ambient.mp3" autoplay></audio> -->
 <audio id="copy-sound" preload="none">
   <!-- Add your audio file: static/register.mp3 -->
 </audio>
@@ -911,7 +911,7 @@ let deferredInstallPrompt = null;
 
 // ── PWA setup ─────────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+  navigator.serviceWorker.register('/static/sw.js').catch(()=>{});
 }
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
