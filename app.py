@@ -1,3 +1,4 @@
+
 """
 Coupon & Deals Scraper — Flask Backend
 Sources: CouponFollow, Savings.com, RSS feeds (Slickdeals, 9to5Toys, DealNews)
@@ -629,7 +630,7 @@ def api_deals():
         if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
             deal["code"] = "FRIEND"
     data["total_deals"] = len(deals)
-data["total_codes"] = sum(1 for d in deals if d.get("code"))
+        data["total_codes"] = sum(1 for d in deals if d.get("code"))
    data["total"] = len(deals)
    data["page"] = 1
    data["pages"] = 1
