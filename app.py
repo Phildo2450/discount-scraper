@@ -89,6 +89,11 @@ HEADERS = {
 SESSION = requests.Session()
 SESSION.headers.update(HEADERS)
 
+# Render's free tier spins the service down after ~15 min of inactivity.
+# RENDER_EXTERNAL_URL is auto-populated by Render on web services and is
+# used to self-ping so the dyno never goes idle.
+RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL", "").rstrip("/")
+
 # Global scrape status
 _scrape_status = {"running": False, "last_run": None, "message": ""}
 
@@ -434,6 +439,27 @@ def scrape_retailer(retailer):
     return deals
 
 
+def get_fallback_deals():
+    """Curated, always-available deals used when every live scrape source
+    is blocked (403/404/empty). These are not scraped or code-validated —
+    just honest pointers to each retailer's own deals page — so the site
+    is never left completely empty.
+    """
+    fallback = []
+    for retailer in RETAILERS:
+        deal = build_deal(
+            retailer=retailer,
+            code="",
+            description=f"Browse current {retailer['name']} deals and clearance",
+            discount="",
+            source="Fallback",
+            url=f"https://www.{retailer['domain']}",
+            deal_type="deal",
+        )
+        fallback.append(decorate_deal(deal))
+    return fallback
+
+
 
 # --- Code Validation Logic ---
 def validate_code_against_aggregators(code, retailer):
@@ -536,21 +562,32 @@ def scrape_all():
     global _scrape_status
     _scrape_status = {"running": True, "last_run": None, "message": "Scraping in progress..."}
     all_new_deals = []
-    
-    for retailer in RETAILERS:
-        try:
-            deals = scrape_retailer(retailer)
-            all_new_deals.extend(deals)
-        except Exception as e:
-            print(f"Error scraping {retailer['name']}: {e}")
-    
+
+    # Scrape retailers concurrently — sequential scraping of every source for
+    # every retailer is slow enough on Render's free-tier CPU that a run can
+    # stall out before ever reaching the status update below.
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_retailer = {executor.submit(scrape_retailer, r): r for r in RETAILERS}
+        for future in as_completed(future_to_retailer):
+            retailer = future_to_retailer[future]
+            try:
+                all_new_deals.extend(future.result())
+            except Exception as e:
+                print(f"Error scraping {retailer['name']}: {e}")
+
     # Validate codes against aggregator sources before publishing
     validation_logger.info(f"Starting validation of {len(all_new_deals)} scraped deals...")
     validated_deals = validate_and_filter_deals(all_new_deals)
-    
+
+    # If every live source is blocked/empty, fall back to curated data so
+    # the site is never left with nothing to show.
+    if not validated_deals:
+        validation_logger.warning("No live deals from any source — publishing fallback deals")
+        validated_deals = get_fallback_deals()
+
     # Only replace live codes with validated ones
     if validated_deals:
-        current_deals = load_deals()
+        current_deals = load_deals().get("deals", [])
         # Keep existing deals that aren't being replaced
         existing_ids = {d.get("id") for d in validated_deals}
         kept_deals = [d for d in current_deals if d.get("id") not in existing_ids]
@@ -560,7 +597,7 @@ def scrape_all():
         validation_logger.info(f"Published {len(validated_deals)} validated deals, kept {len(kept_deals)} existing deals")
     else:
         validation_logger.warning("No validated deals to publish - keeping current live codes")
-    
+
     _scrape_status = {
         "running": False,
         "last_run": datetime.now().isoformat(),
@@ -591,6 +628,8 @@ def api_deals():
         # Fix Macy's code: BEST1521 should be SHOP1521
         if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
             deal["code"] = "FRIEND"
+    data["total_deals"] = len(deals)
+    data["total_codes"] = sum(1 for d in deals if d.get("code"))
     return jsonify(data)
 
 
@@ -610,6 +649,12 @@ def api_scrape():
 @app.route("/api/status")
 def api_status():
     return jsonify(_scrape_status)
+
+
+@app.route("/healthz")
+def healthz():
+    """Lightweight endpoint for the self-ping keep-alive job (and uptime checks)."""
+    return jsonify({"status": "ok"})
 
 
 @app.route("/api/retailers")
@@ -705,15 +750,46 @@ def manifest():
 
 
 
-# --- APScheduler: Automated 6-hour scraping schedule ---
+def keep_alive_ping():
+    """Self-ping so Render's free tier never sees 15 minutes of inactivity
+    and spins the dyno down (which causes ~40-50s cold starts on the next
+    request)."""
+    if not RENDER_EXTERNAL_URL:
+        return
+    try:
+        SESSION.get(f"{RENDER_EXTERNAL_URL}/healthz", timeout=10)
+        validation_logger.info("Keep-alive ping OK")
+    except Exception as e:
+        validation_logger.warning(f"Keep-alive ping failed: {e}")
+
+
+# --- APScheduler: Automated 6-hour scraping schedule + keep-alive ---
 scheduler = BackgroundScheduler()
-scheduler.add_job(
+
+_scrape_job_kwargs = dict(
     func=scrape_all,
     trigger=IntervalTrigger(hours=6),
     id='scheduled_scrape',
     name='Scrape all retailers every 6 hours',
-    replace_existing=True
+    replace_existing=True,
 )
+# Run the first scrape immediately (rather than waiting a full 6 hours) when
+# there's no cached data yet. This works whether the app is started with
+# `python app.py` or imported by gunicorn, unlike a `__main__`-gated thread.
+if not os.path.exists(DEALS_FILE):
+    _scrape_job_kwargs["next_run_time"] = datetime.now()
+scheduler.add_job(**_scrape_job_kwargs)
+
+if RENDER_EXTERNAL_URL:
+    scheduler.add_job(
+        func=keep_alive_ping,
+        trigger=IntervalTrigger(minutes=10),
+        id='keep_alive_ping',
+        name='Self-ping to prevent Render free-tier sleep',
+        replace_existing=True,
+    )
+    validation_logger.info(f"Keep-alive ping scheduled every 10 min against {RENDER_EXTERNAL_URL}")
+
 scheduler.start()
 validation_logger.info("APScheduler started: scraping every 6 hours")
 
@@ -724,8 +800,4 @@ def api_invalid_codes():
 
 
 if __name__ == "__main__":
-    # Run an initial scrape if no cached data exists
-    if not os.path.exists(DEALS_FILE):
-        print("No cached data — running initial scrape…")
-        threading.Thread(target=scrape_all, daemon=True).start()
     app.run(host="127.0.0.1", port=5050, debug=False)
