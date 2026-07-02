@@ -8,7 +8,7 @@ Retailers: Amazon, Walmart, Target, Nike, H&M, Zara, ASOS, Best Buy, Newegg, B&H
 import json
 import os
 import re
-import tim
+import time
 import threading
 import hashlib
 import xml.etree.ElementTree as ET
@@ -700,13 +700,17 @@ def api_deals_trending():
         return int(match.group(1)) if match else 0
     trending = sorted(deals, key=get_discount, reverse=True)[:10]
     domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
+    retailer_meta = {r["name"].lower(): r for r in RETAILERS}
     for deal in trending:
-                       deal["isTrending"] = True
-                       r_meta = next((r for r in RETAILERS if r["name"].lower() == deal.get("retailer", "").lower()), {})
-                       deal["icon"] = r_meta.get("icon", "")
-                       deal["color"] = r_meta.get("color", "#6c5ce7")
+        deal["isTrending"] = True
+        r_key = deal.get("retailer", "").lower()
+        meta = retailer_meta.get(r_key, {})
+        if not deal.get("icon"):
+            deal["icon"] = meta.get("icon", "")
+        if not deal.get("color"):
+            deal["color"] = meta.get("color", "#6c5ce7")
         if not deal.get("url"):
-            domain = domain_map.get(deal.get("retailer", "").lower(), "")
+            domain = domain_map.get(r_key, "")
             if domain:
                 deal["url"] = f"https://www.{domain}"
     return jsonify({"deals": trending})
