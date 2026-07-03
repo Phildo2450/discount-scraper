@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0D1117">
-<meta name="description" content="Live discount codes & promo offers — 100 top retailers">
+<meta name="description" content="Live discount codes & promo offers — {{ retailer_count }} top retailers">
 <link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -750,12 +750,12 @@ header{
     </div>
 
     <h1>Score Epic<br>Deals Today 🔥</h1>
-    <p>100 top retailers. Fresh promo codes. All in one place — updated every 6 hours.</p>
+    <p>{{ retailer_count }} top retailers. Fresh promo codes. All in one place — updated every 6 hours.</p>
 
     <div class="hero-stats">
       <div class="hero-stat"><div class="num" id="statDeals">—</div><div class="label">Active deals</div></div>
       <div class="hero-stat"><div class="num" id="statCodes">—</div><div class="label">Promo codes</div></div>
-      <div class="hero-stat"><div class="num" id="statStores">100</div><div class="label">Retailers</div></div>
+      <div class="hero-stat"><div class="num" id="statStores">{{ retailer_count }}</div><div class="label">Retailers</div></div>
     </div>
 
     <div class="hero-actions">
