@@ -1,0 +1,802 @@
+[
+  {
+    "name": "Amazon",
+    "domain": "amazon.com",
+    "category": "big-box",
+    "slug": "amazon",
+    "color": "#FF9900",
+    "icon": "📦"
+  },
+  {
+    "name": "Walmart",
+    "domain": "walmart.com",
+    "category": "big-box",
+    "slug": "walmart",
+    "color": "#0071CE",
+    "icon": "🏪"
+  },
+  {
+    "name": "Target",
+    "domain": "target.com",
+    "category": "big-box",
+    "slug": "target",
+    "color": "#CC0000",
+    "icon": "🎯"
+  },
+  {
+    "name": "Costco",
+    "domain": "costco.com",
+    "category": "big-box",
+    "slug": "costco",
+    "color": "#E31837",
+    "icon": "🏪"
+  },
+  {
+    "name": "Best Buy",
+    "domain": "bestbuy.com",
+    "category": "electronics",
+    "slug": "bestbuy",
+    "color": "#0046BE",
+    "icon": "💻"
+  },
+  {
+    "name": "Nike",
+    "domain": "nike.com",
+    "category": "fashion",
+    "slug": "nike",
+    "color": "#111111",
+    "icon": "👟"
+  },
+  {
+    "name": "Adidas",
+    "domain": "adidas.com",
+    "category": "fashion",
+    "slug": "adidas",
+    "color": "#000000",
+    "icon": "👟"
+  },
+  {
+    "name": "Apple",
+    "domain": "apple.com",
+    "category": "electronics",
+    "slug": "apple",
+    "color": "#555555",
+    "icon": "🍎"
+  },
+  {
+    "name": "Home Depot",
+    "domain": "homedepot.com",
+    "category": "home",
+    "slug": "homedepot",
+    "color": "#F96302",
+    "icon": "🔨"
+  },
+  {
+    "name": "Lowes",
+    "domain": "lowes.com",
+    "category": "home",
+    "slug": "lowes",
+    "color": "#004990",
+    "icon": "🏠"
+  },
+  {
+    "name": "Macys",
+    "domain": "macys.com",
+    "category": "fashion",
+    "slug": "macys",
+    "color": "#E21A2C",
+    "icon": "🛍️"
+  },
+  {
+    "name": "Nordstrom",
+    "domain": "nordstrom.com",
+    "category": "fashion",
+    "slug": "nordstrom",
+    "color": "#000000",
+    "icon": "👗"
+  },
+  {
+    "name": "Sephora",
+    "domain": "sephora.com",
+    "category": "beauty",
+    "slug": "sephora",
+    "color": "#000000",
+    "icon": "💄"
+  },
+  {
+    "name": "Ulta",
+    "domain": "ulta.com",
+    "category": "beauty",
+    "slug": "ulta",
+    "color": "#E55C78",
+    "icon": "💅"
+  },
+  {
+    "name": "CVS",
+    "domain": "cvs.com",
+    "category": "health",
+    "slug": "cvs",
+    "color": "#CC0000",
+    "icon": "💊"
+  },
+  {
+    "name": "Walgreens",
+    "domain": "walgreens.com",
+    "category": "health",
+    "slug": "walgreens",
+    "color": "#E31837",
+    "icon": "⚕️"
+  },
+  {
+    "name": "Kroger",
+    "domain": "kroger.com",
+    "category": "grocery",
+    "slug": "kroger",
+    "color": "#E31837",
+    "icon": "🛒"
+  },
+  {
+    "name": "DoorDash",
+    "domain": "doordash.com",
+    "category": "food-delivery",
+    "slug": "doordash",
+    "color": "#FF3008",
+    "icon": "🚗"
+  },
+  {
+    "name": "Uber Eats",
+    "domain": "ubereats.com",
+    "category": "food-delivery",
+    "slug": "ubereats",
+    "color": "#06C167",
+    "icon": "🍕"
+  },
+  {
+    "name": "Grubhub",
+    "domain": "grubhub.com",
+    "category": "food-delivery",
+    "slug": "grubhub",
+    "color": "#F63440",
+    "icon": "🍔"
+  },
+  {
+    "name": "H&M",
+    "domain": "hm.com",
+    "category": "fashion",
+    "slug": "hm",
+    "color": "#E50010",
+    "icon": "👘"
+  },
+  {
+    "name": "Zara",
+    "domain": "zara.com",
+    "category": "fashion",
+    "slug": "zara",
+    "color": "#000000",
+    "icon": "👗"
+  },
+  {
+    "name": "ASOS",
+    "domain": "asos.com",
+    "category": "fashion",
+    "slug": "asos",
+    "color": "#2D2D2D",
+    "icon": "👚"
+  },
+  {
+    "name": "Newegg",
+    "domain": "newegg.com",
+    "category": "electronics",
+    "slug": "newegg",
+    "color": "#F7A000",
+    "icon": "🖥️"
+  },
+  {
+    "name": "B&H Photo",
+    "domain": "bhphotovideo.com",
+    "category": "electronics",
+    "slug": "bhphoto",
+    "color": "#000000",
+    "icon": "📷"
+  },
+  {
+    "name": "Samsung",
+    "domain": "samsung.com",
+    "category": "electronics",
+    "slug": "samsung",
+    "color": "#1428A0",
+    "icon": "📱"
+  },
+  {
+    "name": "Dell",
+    "domain": "dell.com",
+    "category": "electronics",
+    "slug": "dell",
+    "color": "#007DB8",
+    "icon": "💻"
+  },
+  {
+    "name": "Lenovo",
+    "domain": "lenovo.com",
+    "category": "electronics",
+    "slug": "lenovo",
+    "color": "#E2231A",
+    "icon": "💻"
+  },
+  {
+    "name": "GameStop",
+    "domain": "gamestop.com",
+    "category": "electronics",
+    "slug": "gamestop",
+    "color": "#000000",
+    "icon": "🎮"
+  },
+  {
+    "name": "Wayfair",
+    "domain": "wayfair.com",
+    "category": "home",
+    "slug": "wayfair",
+    "color": "#7B0F8E",
+    "icon": "🛋️"
+  },
+  {
+    "name": "IKEA",
+    "domain": "ikea.com",
+    "category": "home",
+    "slug": "ikea",
+    "color": "#0058A3",
+    "icon": "🪑"
+  },
+  {
+    "name": "Pottery Barn",
+    "domain": "potterybarn.com",
+    "category": "home",
+    "slug": "potterybarn",
+    "color": "#6B4E37",
+    "icon": "🏠"
+  },
+  {
+    "name": "West Elm",
+    "domain": "westelm.com",
+    "category": "home",
+    "slug": "westelm",
+    "color": "#333333",
+    "icon": "🛋️"
+  },
+  {
+    "name": "Crate & Barrel",
+    "domain": "crateandbarrel.com",
+    "category": "home",
+    "slug": "crateandbarrel",
+    "color": "#000000",
+    "icon": "🏠"
+  },
+  {
+    "name": "REI",
+    "domain": "rei.com",
+    "category": "outdoors",
+    "slug": "rei",
+    "color": "#1A8340",
+    "icon": "⛺"
+  },
+  {
+    "name": "Patagonia",
+    "domain": "patagonia.com",
+    "category": "outdoors",
+    "slug": "patagonia",
+    "color": "#1A1A2E",
+    "icon": "🏔️"
+  },
+  {
+    "name": "The North Face",
+    "domain": "thenorthface.com",
+    "category": "outdoors",
+    "slug": "thenorthface",
+    "color": "#000000",
+    "icon": "🧥"
+  },
+  {
+    "name": "Under Armour",
+    "domain": "underarmour.com",
+    "category": "fashion",
+    "slug": "underarmour",
+    "color": "#1D1D1D",
+    "icon": "🏃"
+  },
+  {
+    "name": "Puma",
+    "domain": "puma.com",
+    "category": "fashion",
+    "slug": "puma",
+    "color": "#000000",
+    "icon": "👟"
+  },
+  {
+    "name": "New Balance",
+    "domain": "newbalance.com",
+    "category": "fashion",
+    "slug": "newbalance",
+    "color": "#CF0A2C",
+    "icon": "👟"
+  },
+  {
+    "name": "Lululemon",
+    "domain": "lululemon.com",
+    "category": "fashion",
+    "slug": "lululemon",
+    "color": "#D31334",
+    "icon": "🧘"
+  },
+  {
+    "name": "Gap",
+    "domain": "gap.com",
+    "category": "fashion",
+    "slug": "gap",
+    "color": "#000066",
+    "icon": "👕"
+  },
+  {
+    "name": "Old Navy",
+    "domain": "oldnavy.com",
+    "category": "fashion",
+    "slug": "oldnavy",
+    "color": "#003A70",
+    "icon": "👕"
+  },
+  {
+    "name": "Banana Republic",
+    "domain": "bananarepublic.com",
+    "category": "fashion",
+    "slug": "bananarepublic",
+    "color": "#2D3436",
+    "icon": "👔"
+  },
+  {
+    "name": "J.Crew",
+    "domain": "jcrew.com",
+    "category": "fashion",
+    "slug": "jcrew",
+    "color": "#7A2E4E",
+    "icon": "👔"
+  },
+  {
+    "name": "Uniqlo",
+    "domain": "uniqlo.com",
+    "category": "fashion",
+    "slug": "uniqlo",
+    "color": "#FF0000",
+    "icon": "👕"
+  },
+  {
+    "name": "Forever 21",
+    "domain": "forever21.com",
+    "category": "fashion",
+    "slug": "forever21",
+    "color": "#000000",
+    "icon": "👗"
+  },
+  {
+    "name": "Kohls",
+    "domain": "kohls.com",
+    "category": "fashion",
+    "slug": "kohls",
+    "color": "#000000",
+    "icon": "🏪"
+  },
+  {
+    "name": "JCPenney",
+    "domain": "jcpenney.com",
+    "category": "fashion",
+    "slug": "jcpenney",
+    "color": "#C8102E",
+    "icon": "🏪"
+  },
+  {
+    "name": "TJ Maxx",
+    "domain": "tjmaxx.com",
+    "category": "fashion",
+    "slug": "tjmaxx",
+    "color": "#E11B22",
+    "icon": "🏪"
+  },
+  {
+    "name": "Marshalls",
+    "domain": "marshalls.com",
+    "category": "fashion",
+    "slug": "marshalls",
+    "color": "#006747",
+    "icon": "🏪"
+  },
+  {
+    "name": "Ross",
+    "domain": "rossstores.com",
+    "category": "fashion",
+    "slug": "ross",
+    "color": "#003DA5",
+    "icon": "🏪"
+  },
+  {
+    "name": "Bath & Body Works",
+    "domain": "bathandbodyworks.com",
+    "category": "beauty",
+    "slug": "bathandbodyworks",
+    "color": "#004C91",
+    "icon": "🛁"
+  },
+  {
+    "name": "Foot Locker",
+    "domain": "footlocker.com",
+    "category": "fashion",
+    "slug": "footlocker",
+    "color": "#000000",
+    "icon": "👟"
+  },
+  {
+    "name": "Zappos",
+    "domain": "zappos.com",
+    "category": "fashion",
+    "slug": "zappos",
+    "color": "#007BDC",
+    "icon": "👠"
+  },
+  {
+    "name": "Chewy",
+    "domain": "chewy.com",
+    "category": "pets",
+    "slug": "chewy",
+    "color": "#1C49C2",
+    "icon": "🐶"
+  },
+  {
+    "name": "Petco",
+    "domain": "petco.com",
+    "category": "pets",
+    "slug": "petco",
+    "color": "#0054A6",
+    "icon": "🐾"
+  },
+  {
+    "name": "PetSmart",
+    "domain": "petsmart.com",
+    "category": "pets",
+    "slug": "petsmart",
+    "color": "#E51837",
+    "icon": "🐱"
+  },
+  {
+    "name": "Staples",
+    "domain": "staples.com",
+    "category": "office",
+    "slug": "staples",
+    "color": "#CC0000",
+    "icon": "📎"
+  },
+  {
+    "name": "Office Depot",
+    "domain": "officedepot.com",
+    "category": "office",
+    "slug": "officedepot",
+    "color": "#CC0000",
+    "icon": "💼"
+  },
+  {
+    "name": "eBay",
+    "domain": "ebay.com",
+    "category": "marketplace",
+    "slug": "ebay",
+    "color": "#E53238",
+    "icon": "💰"
+  },
+  {
+    "name": "Etsy",
+    "domain": "etsy.com",
+    "category": "marketplace",
+    "slug": "etsy",
+    "color": "#F56400",
+    "icon": "🎁"
+  },
+  {
+    "name": "Instacart",
+    "domain": "instacart.com",
+    "category": "grocery",
+    "slug": "instacart",
+    "color": "#43B02A",
+    "icon": "🥕"
+  },
+  {
+    "name": "Whole Foods",
+    "domain": "wholefoodsmarket.com",
+    "category": "grocery",
+    "slug": "wholefoods",
+    "color": "#00674B",
+    "icon": "🥦"
+  },
+  {
+    "name": "Trader Joes",
+    "domain": "traderjoes.com",
+    "category": "grocery",
+    "slug": "traderjoes",
+    "color": "#E21836",
+    "icon": "🌽"
+  },
+  {
+    "name": "Albertsons",
+    "domain": "albertsons.com",
+    "category": "grocery",
+    "slug": "albertsons",
+    "color": "#0073CF",
+    "icon": "🛒"
+  },
+  {
+    "name": "Publix",
+    "domain": "publix.com",
+    "category": "grocery",
+    "slug": "publix",
+    "color": "#4E8E30",
+    "icon": "🛒"
+  },
+  {
+    "name": "Michaels",
+    "domain": "michaels.com",
+    "category": "crafts",
+    "slug": "michaels",
+    "color": "#DA291C",
+    "icon": "🎨"
+  },
+  {
+    "name": "Hobby Lobby",
+    "domain": "hobbylobby.com",
+    "category": "crafts",
+    "slug": "hobbylobby",
+    "color": "#004B87",
+    "icon": "✂️"
+  },
+  {
+    "name": "AutoZone",
+    "domain": "autozone.com",
+    "category": "automotive",
+    "slug": "autozone",
+    "color": "#E31837",
+    "icon": "🚗"
+  },
+  {
+    "name": "O'Reilly Auto",
+    "domain": "oreillyauto.com",
+    "category": "automotive",
+    "slug": "oreillyauto",
+    "color": "#1B5E20",
+    "icon": "🔧"
+  },
+  {
+    "name": "Advance Auto Parts",
+    "domain": "advanceautoparts.com",
+    "category": "automotive",
+    "slug": "advanceautoparts",
+    "color": "#E31837",
+    "icon": "🚗"
+  },
+  {
+    "name": "Bed Bath & Beyond",
+    "domain": "bedbathandbeyond.com",
+    "category": "home",
+    "slug": "bedbathbeyond",
+    "color": "#003B6F",
+    "icon": "🛏️"
+  },
+  {
+    "name": "Williams Sonoma",
+    "domain": "williams-sonoma.com",
+    "category": "home",
+    "slug": "williamssonoma",
+    "color": "#6B4C33",
+    "icon": "🍳"
+  },
+  {
+    "name": "Anthropologie",
+    "domain": "anthropologie.com",
+    "category": "fashion",
+    "slug": "anthropologie",
+    "color": "#5C2D91",
+    "icon": "🌺"
+  },
+  {
+    "name": "Urban Outfitters",
+    "domain": "urbanoutfitters.com",
+    "category": "fashion",
+    "slug": "urbanoutfitters",
+    "color": "#000000",
+    "icon": "🌆"
+  },
+  {
+    "name": "Free People",
+    "domain": "freepeople.com",
+    "category": "fashion",
+    "slug": "freepeople",
+    "color": "#8B4513",
+    "icon": "🌻"
+  },
+  {
+    "name": "Sams Club",
+    "domain": "samsclub.com",
+    "category": "big-box",
+    "slug": "samsclub",
+    "color": "#0060A9",
+    "icon": "🏪"
+  },
+  {
+    "name": "BJs Wholesale",
+    "domain": "bjs.com",
+    "category": "big-box",
+    "slug": "bjs",
+    "color": "#D32F2F",
+    "icon": "🏪"
+  },
+  {
+    "name": "Dollar General",
+    "domain": "dollargeneral.com",
+    "category": "discount",
+    "slug": "dollargeneral",
+    "color": "#FFC107",
+    "icon": "💵"
+  },
+  {
+    "name": "Dollar Tree",
+    "domain": "dollartree.com",
+    "category": "discount",
+    "slug": "dollartree",
+    "color": "#4CAF50",
+    "icon": "🌳"
+  },
+  {
+    "name": "Five Below",
+    "domain": "fivebelow.com",
+    "category": "discount",
+    "slug": "fivebelow",
+    "color": "#003DA5",
+    "icon": "⭐"
+  },
+  {
+    "name": "Overstock",
+    "domain": "overstock.com",
+    "category": "home",
+    "slug": "overstock",
+    "color": "#E21836",
+    "icon": "🏠"
+  },
+  {
+    "name": "Rakuten",
+    "domain": "rakuten.com",
+    "category": "marketplace",
+    "slug": "rakuten",
+    "color": "#BF0000",
+    "icon": "💰"
+  },
+  {
+    "name": "Groupon",
+    "domain": "groupon.com",
+    "category": "marketplace",
+    "slug": "groupon",
+    "color": "#53A318",
+    "icon": "🏷️"
+  },
+  {
+    "name": "Booking.com",
+    "domain": "booking.com",
+    "category": "travel",
+    "slug": "booking",
+    "color": "#003580",
+    "icon": "✈️"
+  },
+  {
+    "name": "Expedia",
+    "domain": "expedia.com",
+    "category": "travel",
+    "slug": "expedia",
+    "color": "#00355F",
+    "icon": "🌎"
+  },
+  {
+    "name": "Hotels.com",
+    "domain": "hotels.com",
+    "category": "travel",
+    "slug": "hotels",
+    "color": "#D32F2F",
+    "icon": "🏨"
+  },
+  {
+    "name": "Airbnb",
+    "domain": "airbnb.com",
+    "category": "travel",
+    "slug": "airbnb",
+    "color": "#FF5A5F",
+    "icon": "🏡"
+  },
+  {
+    "name": "Southwest Airlines",
+    "domain": "southwest.com",
+    "category": "travel",
+    "slug": "southwest",
+    "color": "#304CB2",
+    "icon": "✈️"
+  },
+  {
+    "name": "Vitamin Shoppe",
+    "domain": "vitaminshoppe.com",
+    "category": "health",
+    "slug": "vitaminshoppe",
+    "color": "#6B8E23",
+    "icon": "💪"
+  },
+  {
+    "name": "GNC",
+    "domain": "gnc.com",
+    "category": "health",
+    "slug": "gnc",
+    "color": "#F7941D",
+    "icon": "💪"
+  },
+  {
+    "name": "Dicks Sporting Goods",
+    "domain": "dickssportinggoods.com",
+    "category": "outdoors",
+    "slug": "dicks",
+    "color": "#006341",
+    "icon": "🏈"
+  },
+  {
+    "name": "Academy Sports",
+    "domain": "academy.com",
+    "category": "outdoors",
+    "slug": "academy",
+    "color": "#003DA5",
+    "icon": "⚽"
+  },
+  {
+    "name": "Cabelas",
+    "domain": "cabelas.com",
+    "category": "outdoors",
+    "slug": "cabelas",
+    "color": "#556B2F",
+    "icon": "🏞️"
+  },
+  {
+    "name": "Bass Pro Shops",
+    "domain": "basspro.com",
+    "category": "outdoors",
+    "slug": "basspro",
+    "color": "#003300",
+    "icon": "🎣"
+  },
+  {
+    "name": "Tiffany & Co",
+    "domain": "tiffany.com",
+    "category": "luxury",
+    "slug": "tiffany",
+    "color": "#81D8D0",
+    "icon": "💍"
+  },
+  {
+    "name": "Coach",
+    "domain": "coach.com",
+    "category": "luxury",
+    "slug": "coach",
+    "color": "#000000",
+    "icon": "👜"
+  },
+  {
+    "name": "Shein",
+    "domain": "shein.com",
+    "category": "fashion",
+    "slug": "shein",
+    "color": "#000000",
+    "icon": "👗"
+  },
+  {
+    "name": "Temu",
+    "domain": "temu.com",
+    "category": "marketplace",
+    "slug": "temu",
+    "color": "#FB6F07",
+    "icon": "📦"
+  }
+]
