@@ -755,7 +755,7 @@ header{
     <div class="hero-stats">
       <div class="hero-stat"><div class="num" id="statDeals">—</div><div class="label">Active deals</div></div>
       <div class="hero-stat"><div class="num" id="statCodes">—</div><div class="label">Promo codes</div></div>
-      <div class="hero-stat"><div class="num" id="statStores">{{ retailer_count }}</div><div class="label">Retailers</div></div>
+      <div class="hero-stat"><div class="num" id="statStores">{{ retailer_count }}</div><div class="label">Official retailers</div></div>
     </div>
 
     <div class="hero-actions">
@@ -1043,9 +1043,8 @@ async function loadDeals(reset = false) {
 
     // Update hero stats
     if (reset && page === 1) {
-      document.getElementById('statDeals').textContent = (data.total_deals || data.total) || '—';
-      const codesCount = data.deals.filter(d=>(d.deal_type||d.type)==='code').length;
-      document.getElementById('statCodes').textContent = codesCount > 0 ? `${codesCount}+` : '—';
+      document.getElementById('statDeals').textContent = data.total || '—';
+      document.getElementById('statCodes').textContent = data.total_codes > 0 ? `${data.total_codes}+` : '—';
     }
 
     hasMore = data.page < data.pages;
@@ -1457,10 +1456,25 @@ function spawnJustUsed(msg) {
 })();
 
 // ── HTML generators ────────────────────────────────────────────────────────────
+function timeAgo(iso) {
+  const then = iso ? new Date(iso) : null;
+  if (!then || Number.isNaN(then.getTime())) return '';
+  const mins = Math.max(0, Math.floor((Date.now() - then.getTime()) / 60000));
+  if (mins < 60) return `${mins}m ago`;
+  return `${Math.floor(mins/60)}h ${mins%60}m ago`;
+}
+
+function sourceLabel(d) {
+  if (d.source_type === 'official_x') return `Official X ${d.official_x_handle ? '@' + d.official_x_handle : ''}`;
+  if (d.source_type === 'affiliate_feed') return 'Official affiliate feed';
+  return `Official ${d.retailer || 'site'}`;
+}
+
 function dealCardHTML(d) {
   const saved = savedDeals.includes(d.id);
   const successRate = d.successRate ?? (d.confidence > 1 ? 80 : null);
   const viewers = Math.floor(Math.random()*40)+3;
+  const checkedAgo = timeAgo(d.source_checked_at);
 
   return `
   <div class="deal-card" style="--retailer-color:${d.color||'#8338EC'}">
@@ -1472,7 +1486,7 @@ function dealCardHTML(d) {
       <span class="badge ${(d.deal_type||d.type)==='code'?'type-code':'type-deal'}">
         ${(d.deal_type||d.type)==='code'?'🎟 Code':'🏷 Deal'}
       </span>
-      ${d.isVerified?'<span class="badge verified">✓ Verified</span>':''}
+      ${d.official_source?'<span class="badge verified">✓ Official</span>':(d.isVerified?'<span class="badge verified">✓ Verified</span>':'')}
       ${d.isTrending?'<span class="badge trending">🔥 Hot</span>':''}
       ${d.isExclusive?'<span class="badge exclusive">⭐ Exclusive</span>':''}
     </div>
@@ -1492,7 +1506,9 @@ function dealCardHTML(d) {
 
     <div class="card-meta">
       <span class="viewers"><span class="viewer-dot"></span>${viewers} viewing</span>
-      <span class="meta-item">📡 ${esc(d.source)}</span>
+      <span class="meta-item">📡 ${esc(sourceLabel(d))}</span>
+      ${checkedAgo?`<span class="meta-item">⏱ Checked ${esc(checkedAgo)}</span>`:''}
+      ${d.source_url?`<a class="meta-item" href="${esc(d.source_url)}" target="_blank" rel="noopener nofollow">🔎 Source</a>`:''}
       ${d.timesUsed?`<span class="meta-item">👥 ${d.timesUsed} used</span>`:''}
     </div>
 
@@ -1539,7 +1555,7 @@ function carouselCardHTML(d) {
       <span style="font-size:22px">${d.icon||'🏪'}</span>
       <div>
         <div style="font-weight:700;font-size:14px">${esc(d.retailer)}</div>
-        <div style="font-size:11px;color:var(--muted)">${d.isTrending?'🔥 Trending':d.source}</div>
+        <div style="font-size:11px;color:var(--muted)">${d.isTrending?'🔥 Trending':sourceLabel(d)}</div>
       </div>
       ${d.isTrending?'<span class="fire-badge" style="margin-left:auto">HOT</span>':''}
     </div>

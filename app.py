@@ -1,10 +1,10 @@
-
-
 """
-Coupon & Deals Scraper — Flask Backend
-Sources: CouponFollow, Savings.com, RSS feeds (Slickdeals, 9to5Toys, DealNews)
-Retailers: Amazon, Walmart, Target, Nike, H&M, Zara, ASOS, Best Buy, Newegg, B&H,
-           DoorDash, Grubhub, Uber Eats
+Deal Drop / RealDiscountCodes backend.
+
+Security and trust policy:
+- Publish only deals/codes from official retailer domains or pre-approved official X accounts.
+- Hide public deals once their source check is older than the freshness window.
+- Reject third-party coupon aggregators, RSS deal blogs, and untrusted social accounts.
 """
 
 import json
@@ -13,16 +13,16 @@ import re
 import time
 import threading
 import hashlib
-import xml.etree.ElementTree as ET
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, jsonify, render_template, send_from_directory
+from flask import Flask, jsonify, render_template, send_from_directory, request
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import logging
+from urllib.parse import urlparse
 
 # --- Validation & Scheduling Setup ---
 validation_logger = logging.getLogger('code_validation')
@@ -40,25 +40,93 @@ app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEALS_FILE = os.path.join(BASE_DIR, "deals.json")
 
-RETAILERS_FILE = os.path.join(BASE_DIR, "retailers.json")
-with open(RETAILERS_FILE, "r") as f:
-    RETAILERS = json.load(f)
+RETAILERS_FILE = os.path.join(BASE_DIR, "retailers_official.json")
+FRESHNESS_HOURS = int(os.environ.get("DEALDROP_FRESHNESS_HOURS", "3"))
+FRESHNESS_WINDOW = timedelta(hours=FRESHNESS_HOURS)
+MAX_PROMO_PAGES_PER_RETAILER = int(os.environ.get("DEALDROP_MAX_PROMO_PAGES", "4"))
+MAX_DEALS_PER_RETAILER = int(os.environ.get("DEALDROP_MAX_DEALS_PER_RETAILER", "6"))
+SCRAPE_BATCH_SIZE = int(os.environ.get("DEALDROP_SCRAPE_BATCH_SIZE", "12"))
+TRUSTED_SOURCE_TYPES = {"official_site", "official_x", "affiliate_feed"}
+BLOCKED_SOURCE_HOST_KEYWORDS = (
+    "couponfollow", "savings.com", "couponcabin", "retailmenot", "slickdeals",
+    "dealnews", "bensdeals", "9to5toys", "9to5mac", "coupon", "dealsplus",
+)
 
+def utcnow():
+    return datetime.now(timezone.utc)
+
+def iso_now():
+    return utcnow().isoformat()
+
+def parse_dt(value):
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+def host_matches_domain(host, domain):
+    host = (host or "").lower().strip().rstrip(".")
+    domain = (domain or "").lower().strip().rstrip(".")
+    return host == domain or host.endswith("." + domain)
+
+def allowed_source_host(url, retailer):
+    try:
+        host = urlparse(url).netloc.lower().split(":", 1)[0]
+    except Exception:
+        return False
+    if not host:
+        return False
+    domain = retailer.get("domain", "")
+    allowed = set(retailer.get("allowed_domains") or []) | {domain, f"www.{domain}"}
+    return any(host_matches_domain(host, d) for d in allowed if d)
+
+def load_official_retailers():
+    if os.path.exists(RETAILERS_FILE):
+        with open(RETAILERS_FILE, encoding="utf-8") as f:
+            retailers = json.load(f)
+    else:
+        retailers = RETAILERS
+    for r in retailers:
+        domain = r.get("domain", "").lower().strip()
+        r.setdefault("allowed_domains", [domain, f"www.{domain}"])
+        r.setdefault("promo_paths", ["/", "/sale", "/deals", "/offers", "/coupons", "/promo-code"])
+        r.setdefault("official_x_handles", [])
+        r.setdefault("source_policy", "official_site_or_official_x_only")
+    return retailers
+
+RETAILERS = [
+    # Big-box
+    {"name": "Amazon",    "domain": "amazon.com",         "slug": "amazon",    "category": "big-box",  "color": "#FF9900", "icon": "🛒"},
+    {"name": "Walmart",   "domain": "walmart.com",        "slug": "walmart",   "category": "big-box",  "color": "#0071CE", "icon": "🏪"},
+    {"name": "Target",    "domain": "target.com",         "slug": "target",    "category": "big-box",  "color": "#CC0000", "icon": "🎯"},
+    # Fashion
+    {"name": "Nike",      "domain": "nike.com",           "slug": "nike",      "category": "fashion",  "color": "#111111", "icon": "👟"},
+    {"name": "H&M",       "domain": "hm.com",             "slug": "h-and-m",   "category": "fashion",  "color": "#E50010", "icon": "👗"},
+    {"name": "Zara",      "domain": "zara.com",           "slug": "zara",      "category": "fashion",  "color": "#1A1A1A", "icon": "👘"},
+    {"name": "ASOS",      "domain": "asos.com",           "slug": "asos",      "category": "fashion",  "color": "#2D3643", "icon": "🧥"},
+    # Tech
+    {"name": "Best Buy",  "domain": "bestbuy.com",        "slug": "best-buy",  "category": "tech",     "color": "#0046BE", "icon": "💻"},
+    {"name": "Newegg",    "domain": "newegg.com",         "slug": "newegg",    "category": "tech",     "color": "#FF6600", "icon": "🖥️"},
+    {"name": "B&H",       "domain": "bhphotovideo.com",   "slug": "b-and-h",   "category": "tech",     "color": "#002F65", "icon": "📷"},
+    # Food & Delivery
+    {"name": "DoorDash",  "domain": "doordash.com",       "slug": "doordash",  "category": "food",     "color": "#FF3008", "icon": "🚪"},
+    {"name": "Grubhub",   "domain": "grubhub.com",        "slug": "grubhub",   "category": "food",     "color": "#F63440", "icon": "🍔"},
+    {"name": "Uber Eats", "domain": "ubereats.com",       "slug": "uber-eats", "category": "food",     "color": "#06C167", "icon": "🛵"},
+    {"name": "CVS",         "domain": "cvs.com",            "color": "#CC0000", "icon": "\U0001f48a", "category": "health",  "slug": "cvs"},
+    {"name": "Macys",       "domain": "macys.com",          "color": "#E21A2C", "icon": "\U0001f6cd", "category": "fashion", "slug": "macys"},
+]
+
+RETAILERS = load_official_retailers()
 RETAILER_KEYWORDS = {r["name"]: r for r in RETAILERS}
-# Also match partial / alternate names
-KEYWORD_MAP = {
-    "amazon": "Amazon", "walmart": "Walmart", "target": "Target",
-    "nike": "Nike", "h&m": "H&M", "hm": "H&M",
-    "zara": "Zara", "asos": "ASOS",
-    "best buy": "Best Buy", "bestbuy": "Best Buy",
-    "newegg": "Newegg",
-    "b&h": "B&H", "bhphotovideo": "B&H", "b and h": "B&H",
-    "doordash": "DoorDash", "door dash": "DoorDash",
-    "grubhub": "Grubhub",
-    "uber eats": "Uber Eats", "ubereats": "Uber Eats",
-    "cvs": "CVS", "cvs pharmacy": "CVS",
-    "macys": "Macys", "macy's": "Macys", "macys.com": "Macys",
-}
+KEYWORD_MAP = {}
+for _r in RETAILERS:
+    names = {_r.get("name", ""), _r.get("slug", ""), _r.get("domain", "").split(".")[0]}
+    names.update(_r.get("keywords") or [])
+    for _name in names:
+        if _name:
+            KEYWORD_MAP[_name.lower()] = _r["name"]
 
 HEADERS = {
     "User-Agent": (
@@ -73,18 +141,13 @@ HEADERS = {
 SESSION = requests.Session()
 SESSION.headers.update(HEADERS)
 
-# Render's free tier spins the service down after ~15 min of inactivity.
-# RENDER_EXTERNAL_URL is auto-populated by Render on web services and is
-# used to self-ping so the dyno never goes idle.
-RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL", "").rstrip("/")
-
 # Global scrape status
 _scrape_status = {"running": False, "last_run": None, "message": ""}
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def deal_id(*parts):
-    return hashlib.md5("-".join(str(p) for p in parts).encode()).hexdigest()[:12]
+    return hashlib.sha256("-".join(str(p) for p in parts).encode()).hexdigest()[:12]
 
 
 
@@ -94,25 +157,51 @@ def normalize_retailer_key(name):
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
 
-def build_deal(retailer, code, description, discount, source, url, deal_type=None):
-    """Build a normalized deal dictionary with all required fields.
+def build_deal(retailer=None, code="", description="", discount="", source="", url="", deal_type=None, **legacy):
+    """Build a normalized deal dictionary with official-source provenance fields.
 
-    Every scraper should use this to ensure consistent deal shape.
+    The legacy keyword path keeps old tests/helpers from crashing, but production
+    scrapers pass a retailer dict and official source metadata.
     """
+    if retailer is None or isinstance(retailer, str):
+        retailer_name = retailer or legacy.get("retailer", "")
+        retailer = find_retailer(retailer_name) or {
+            "name": retailer_name,
+            "domain": urlparse(legacy.get("url", url) or "").netloc.replace("www.", ""),
+            "category": legacy.get("category", ""),
+            "color": "#333333",
+            "icon": "",
+        }
+    description = description or legacy.get("title", "") or legacy.get("description", "")
+    code = (code if code is not None else legacy.get("code", "")) or ""
+    discount = discount or legacy.get("discount", "") or ""
+    url = url or legacy.get("url", "") or ""
     if deal_type is None:
         deal_type = "code" if code else "deal"
+    source_type = legacy.get("source_type") or "official_site"
+    checked_at = legacy.get("source_checked_at") or iso_now()
     return {
-        "id": deal_id(retailer["name"], description[:40] if description else ""),
-        "retailer": retailer["name"],
+        "id": deal_id(retailer.get("name", ""), code, description[:80], url),
+        "title": description,
+        "retailer": retailer.get("name", ""),
         "category": retailer.get("category", ""),
         "color": retailer.get("color", "#333333"),
         "icon": retailer.get("icon", ""),
-        "code": code or "",
+        "domain": retailer.get("domain", ""),
+        "code": code.strip().upper(),
         "description": description or "",
         "discount": discount or "",
         "type": deal_type,
-        "source": source,
-        "url": url or "",
+        "source": source or retailer.get("name", ""),
+        "source_type": source_type,
+        "source_url": url,
+        "source_checked_at": checked_at,
+        "validated_at": checked_at,
+        "fresh_until": (parse_dt(checked_at) + FRESHNESS_WINDOW).isoformat() if parse_dt(checked_at) else "",
+        "official_source": True,
+        "isVerified": True,
+        "confidence_score": legacy.get("confidence_score", 90 if code else 75),
+        "url": url or f"https://www.{retailer.get('domain', '')}",
     }
 
 
@@ -123,16 +212,32 @@ def decorate_deal(deal):
 
 
 def validate_deal(deal):
-    """Validate that a deal has the minimum required fields.
-
-    Returns True if valid, False otherwise.
-    """
-    required = ("id", "retailer", "description", "source", "url")
-    for field in required:
-        if not deal.get(field):
-            return False
-    if not deal.get("code") and not deal.get("description"):
+    """Validate official provenance, freshness, and minimum public fields."""
+    required = ("id", "retailer", "description", "source", "url", "source_url", "source_checked_at")
+    if any(not deal.get(field) for field in required):
         return False
+    if deal.get("source_type") not in TRUSTED_SOURCE_TYPES:
+        return False
+    if deal.get("official_source") is not True:
+        return False
+    checked = parse_dt(deal.get("source_checked_at"))
+    if not checked or utcnow() - checked > FRESHNESS_WINDOW:
+        return False
+    retailer = RETAILER_KEYWORDS.get(deal.get("retailer")) or find_retailer(deal.get("retailer", ""))
+    if not retailer:
+        return False
+    if deal.get("source_type") == "official_site" and not allowed_source_host(deal.get("source_url", ""), retailer):
+        return False
+    if deal.get("source_type") == "official_x":
+        handle = (deal.get("official_x_handle") or "").strip().lstrip("@").lower()
+        allowed_handles = {h.strip().lstrip("@").lower() for h in retailer.get("official_x_handles", [])}
+        if not handle or handle not in allowed_handles:
+            return False
+    if deal.get("code"):
+        # Codes need explicit coupon/promo context to avoid publishing SKUs or random tokens.
+        context = f"{deal.get('description','')} {deal.get('discount','')}".lower()
+        if not re.search(r"(code|promo|coupon|checkout|use\s+code|enter\s+code|off|shipping|bogo|save)", context):
+            return False
     return True
 
 
@@ -141,8 +246,8 @@ def load_deals():
         try:
             with open(DEALS_FILE) as f:
                 return json.load(f)
-        except Exception:
-            pass
+        except Exception as e:
+            validation_logger.warning("Failed to load deals file: %s", e)
     return {"deals": [], "last_updated": None, "count": 0}
 
 
@@ -178,414 +283,313 @@ def safe_get(url, timeout=12, delay=0.4):
         return None
 
 
-# ── Scrapers ─────────────────────────────────────────────────────────────────
 
-def scrape_couponfollow(retailer):
-    """couponfollow.com/site/{domain}"""
-    url = f"https://couponfollow.com/site/{retailer['domain']}"
-    deals = []
-    r = safe_get(url)
-    if not r:
-        return deals
+CODE_CONTEXT_RE = re.compile(r"(?:use|enter|apply)?\s*(?:promo|coupon|discount)?\s*code\s*[:\-]?\s*([A-Z0-9][A-Z0-9_\-]{3,24})", re.I)
+GENERIC_CODE_RE = re.compile(r"\b[A-Z][A-Z0-9_\-]{4,20}\b")
+DISCOUNT_RE = re.compile(r"(\$\s?\d+\s*off|\d+\s?%\s*off|free\s+shipping|bogo|buy\s+one|get\s+one|save\s+\$?\d+)", re.I)
+OFFER_WORD_RE = re.compile(r"(promo|coupon|discount|sale|offer|deal|clearance|code|checkout|free shipping|bogo|save)", re.I)
 
-    soup = BeautifulSoup(r.text, "html.parser")
 
-    # Strategy 1 — data-code attribute on any element
-    for el in soup.select("[data-code]"):
-        code = el.get("data-code", "").strip()
-        if not code or len(code) > 30:
+def official_url_for(retailer, path):
+    path = path or "/"
+    if not path.startswith("/"):
+        path = "/" + path
+    domain = retailer.get("domain", "").lower().strip()
+    return f"https://www.{domain}{path}"
+
+
+def safe_get_official(url, retailer, timeout=14, delay=0.25):
+    if not allowed_source_host(url, retailer):
+        validation_logger.warning("Blocked non-official URL for %s: %s", retailer.get("name"), url)
+        return None
+    time.sleep(delay)
+    try:
+        r = SESSION.get(url, timeout=timeout, allow_redirects=True)
+        if not allowed_source_host(r.url, retailer):
+            validation_logger.warning("Blocked redirect off official domain for %s: %s -> %s", retailer.get("name"), url, r.url)
+            return None
+        if r.status_code >= 400:
+            return None
+        ctype = r.headers.get("content-type", "")
+        if "text/html" not in ctype and "text/plain" not in ctype and ctype:
+            return None
+        return r
+    except Exception as e:
+        validation_logger.debug("Official GET failed for %s %s: %s", retailer.get("name"), url, e)
+        return None
+
+
+def clean_text(value, limit=180):
+    value = re.sub(r"\s+", " ", value or "").strip()
+    return value[:limit]
+
+
+def infer_discount(text):
+    m = DISCOUNT_RE.search(text or "")
+    return m.group(1).title().replace("  ", " ") if m else ""
+
+
+def extract_candidate_blocks(soup):
+    selectors = [
+        "[data-code]", "[data-coupon]", "[data-promo-code]", "[class*='coupon']",
+        "[class*='promo']", "[class*='offer']", "[class*='deal']", "article", "section", "li"
+    ]
+    seen = set()
+    for el in soup.select(",".join(selectors))[:300]:
+        text = clean_text(el.get_text(" ", strip=True), 500)
+        if not text or text in seen or not OFFER_WORD_RE.search(text):
             continue
-        desc = (
-            el.select_one(".title, .offer-title, h3, h2, [class*='title']") or
-            el.select_one("p, [class*='desc']")
-        )
-        discount = el.select_one(".discount, .badge, [class*='discount'], [class*='saving'], [class*='off']")
-        deal = build_deal(
-            retailer=retailer,
-            code=code,
-            description=desc.get_text(strip=True) if desc else "Discount offer",
-            discount=discount.get_text(strip=True) if discount else "",
-            source="CouponFollow",
-            url=f"https://couponfollow.com/site/{retailer['domain']}",
-            deal_type="code",
-        )
-        deal = decorate_deal(deal)
-        if validate_deal(deal):
-            deals.append(deal)
-        if len(deals) >= 6:
+        seen.add(text)
+        yield el, text
+
+
+def extract_codes_from_text(text):
+    """Extract only explicit official promo/coupon code mentions.
+
+    This intentionally does not harvest generic uppercase tokens; official pages
+    often contain SKUs, model names, stock tickers, and product IDs that look like
+    coupon codes. A token must be directly introduced as a promo/coupon/code.
+    """
+    codes = []
+    for m in CODE_CONTEXT_RE.finditer(text or ""):
+        code = m.group(1).upper().strip('.,;:!?)"]')
+        if 4 <= len(code) <= 24 and not code.isdigit() and code not in codes:
+            codes.append(code)
+    return codes
+
+
+def official_site_home_deal(retailer, source_url):
+    checked = iso_now()
+    return decorate_deal(build_deal(
+        retailer=retailer,
+        code="",
+        description=f"Official {retailer['name']} offers and sale page checked within {FRESHNESS_HOURS} hours.",
+        discount="Official Offers",
+        source=retailer["name"],
+        url=source_url,
+        deal_type="deal",
+        source_type="official_site",
+        source_checked_at=checked,
+        confidence_score=75,
+    ))
+
+
+def scrape_official_site(retailer):
+    """Scrape only pre-approved official retailer pages for fresh codes/offers."""
+    deals = []
+    paths = retailer.get("promo_paths") or ["/", "/sale", "/deals", "/offers", "/coupons"]
+    for path in paths[:MAX_PROMO_PAGES_PER_RETAILER]:
+        url = official_url_for(retailer, path)
+        r = safe_get_official(url, retailer)
+        if not r:
+            continue
+        soup = BeautifulSoup(r.text, "html.parser")
+        checked = iso_now()
+        found_on_page = 0
+        for _, block_text in extract_candidate_blocks(soup):
+            discount = infer_discount(block_text)
+            codes = extract_codes_from_text(block_text)
+            if codes:
+                for code in codes[:2]:
+                    deal = build_deal(
+                        retailer=retailer,
+                        code=code,
+                        description=clean_text(block_text, 140),
+                        discount=discount or "Promo Code",
+                        source=retailer["name"],
+                        url=r.url,
+                        deal_type="code",
+                        source_type="official_site",
+                        source_checked_at=checked,
+                        confidence_score=95,
+                    )
+                    deal = decorate_deal(deal)
+                    if validate_deal(deal):
+                        deals.append(deal); found_on_page += 1
+            elif discount:
+                deal = build_deal(
+                    retailer=retailer,
+                    code="",
+                    description=clean_text(block_text, 140),
+                    discount=discount,
+                    source=retailer["name"],
+                    url=r.url,
+                    deal_type="deal",
+                    source_type="official_site",
+                    source_checked_at=checked,
+                    confidence_score=82,
+                )
+                deal = decorate_deal(deal)
+                if validate_deal(deal):
+                    deals.append(deal); found_on_page += 1
+            if len(deals) >= MAX_DEALS_PER_RETAILER:
+                break
+        if not found_on_page and path in ("/", ""):
+            home = official_site_home_deal(retailer, r.url)
+            if validate_deal(home):
+                deals.append(home)
+        if len(deals) >= MAX_DEALS_PER_RETAILER:
             break
+    validation_logger.info("Official site → %s: %s deals", retailer.get("name"), len(deals))
+    return deals[:MAX_DEALS_PER_RETAILER]
 
-    # Strategy 2 — look for coupon containers without data-code
-    if not deals:
-        containers = soup.select(
-            ".coupon, .offer, [class*='coupon-item'], [class*='deal-card'], "
-            "[class*='offer-item'], article[class*='coupon']"
+
+def scrape_official_x(retailer):
+    """Optional official X ingestion via X API v2 bearer token. Disabled unless X_BEARER_TOKEN is set."""
+    token = os.environ.get("X_BEARER_TOKEN", "").strip()
+    handles = [h.strip().lstrip("@") for h in retailer.get("official_x_handles", []) if h.strip()]
+    if not token or not handles:
+        return []
+    query_handles = " OR ".join(f"from:{h}" for h in handles[:8])
+    query = f"({query_handles}) (code OR promo OR coupon OR discount OR sale OR \"free shipping\") -is:retweet"
+    params = {
+        "query": query,
+        "max_results": "10",
+        "tweet.fields": "created_at,author_id",
+        "expansions": "author_id",
+        "user.fields": "username",
+    }
+    try:
+        r = requests.get(
+            "https://api.x.com/2/tweets/search/recent",
+            headers={"Authorization": f"Bearer {token}", "User-Agent": HEADERS["User-Agent"]},
+            params=params,
+            timeout=12,
         )
-        for el in containers[:6]:
-            # Look for a code-like string: 4-20 uppercase alphanumeric chars
-            code_el = el.select_one(
-                ".code, .coupon-code, [class*='code'], input[type='text'], "
-                "span[class*='code'], button[class*='code']"
-            )
-            code = ""
-            if code_el:
-                code = code_el.get("value") or code_el.get_text(strip=True)
-                code = re.sub(r"\s+", "", code).upper()
-                if len(code) > 25:
-                    code = ""
-
-            desc = el.select_one("h3, h2, .title, [class*='title']")
-            discount = el.select_one("[class*='discount'], [class*='saving'], [class*='badge'], [class*='off']")
-
-            description = desc.get_text(strip=True) if desc else el.get_text(strip=True)[:80]
-            if not description:
-                continue
-
+        if r.status_code != 200:
+            validation_logger.warning("X recent search failed for %s: HTTP %s", retailer.get("name"), r.status_code)
+            return []
+        payload = r.json()
+    except Exception as e:
+        validation_logger.warning("X recent search error for %s: %s", retailer.get("name"), e)
+        return []
+    deals = []
+    checked = iso_now()
+    users = {u.get("id"): u.get("username", "") for u in payload.get("includes", {}).get("users", [])}
+    for post in payload.get("data", []):
+        txt = post.get("text", "")
+        codes = extract_codes_from_text(txt)
+        discount = infer_discount(txt)
+        if not codes and not discount:
+            continue
+        handle = users.get(post.get("author_id")) or (handles[0] if len(handles) == 1 else "")
+        handle = handle.strip().lstrip("@")
+        if handle.lower() not in {h.lower() for h in handles}:
+            continue
+        post_url = f"https://x.com/{handle}/status/{post.get('id')}"
+        for code in codes or [""]:
             deal = build_deal(
-                retailer=retailer,
-                code=code,
-                description=description,
-                discount=discount.get_text(strip=True) if discount else "",
-                source="CouponFollow",
-                url=f"https://couponfollow.com/site/{retailer['domain']}",
+                retailer=retailer, code=code, description=clean_text(txt, 150),
+                discount=discount or ("Official X Offer" if not code else "Promo Code"),
+                source=f"Official X @{handle}", url=post_url, deal_type="code" if code else "deal",
+                source_type="official_x", source_checked_at=checked, confidence_score=90,
             )
+            deal["official_x_handle"] = handle
             deal = decorate_deal(deal)
             if validate_deal(deal):
                 deals.append(deal)
-
-    print(f"  CouponFollow → {retailer['name']}: {len(deals)} deals")
-    return deals
-
-
-def scrape_savings_com(retailer):
-    """savings.com/coupons/{slug}-coupons/"""
-    url = f"https://www.savings.com/coupons/{retailer['slug']}-coupons/"
-    deals = []
-    r = safe_get(url)
-    if not r:
-        return deals
-
-    soup = BeautifulSoup(r.text, "html.parser")
-
-    for el in soup.select("[data-coupon-code], [data-code]"):
-        code = (el.get("data-coupon-code") or el.get("data-code", "")).strip()
-        if not code:
-            continue
-        desc = el.select_one("h3, h2, .title, [class*='title'], p")
-        discount = el.select_one("[class*='discount'], [class*='saving'], [class*='badge']")
-        deal = build_deal(
-            retailer=retailer,
-            code=code,
-            description=desc.get_text(strip=True) if desc else "Special offer",
-            discount=discount.get_text(strip=True) if discount else "",
-            source="Savings.com",
-            url=url,
-            deal_type="code",
-        )
-        deal = decorate_deal(deal)
-        if validate_deal(deal):
-            deals.append(deal)
-        if len(deals) >= 4:
-            break
-
-    print(f"  Savings.com → {retailer['name']}: {len(deals)} deals")
-    return deals
-
-
-def scrape_couponcabin(retailer):
-    """couponcabin.com/coupons/{slug}/"""
-    url = f"https://www.couponcabin.com/coupons/{retailer['slug']}/"
-    deals = []
-    r = safe_get(url)
-    if not r:
-        return deals
-
-    soup = BeautifulSoup(r.text, "html.parser")
-
-    for el in soup.select(".coupon-code-wrap, [class*='coupon'][data-code], [data-code]"):
-        code = el.get("data-code", "").strip()
-        if not code:
-            inp = el.select_one("input")
-            if inp:
-                code = inp.get("value", "").strip()
-        if not code or len(code) > 25:
-            continue
-        desc = el.select_one("h3, h2, .title, p")
-        deal = build_deal(
-            retailer=retailer,
-            code=code,
-            description=desc.get_text(strip=True) if desc else "Promo code",
-            discount="",
-            source="CouponCabin",
-            url=url,
-            deal_type="code",
-        )
-        deal = decorate_deal(deal)
-        if validate_deal(deal):
-            deals.append(deal)
-        if len(deals) >= 4:
-            break
-
-    print(f"  CouponCabin → {retailer['name']}: {len(deals)} deals")
-    return deals
-
-
-def scrape_rss_feed(feed_url, source_name, max_items=60):
-    """Parse an RSS/Atom feed and match items to retailers."""
-    deals = []
-    r = safe_get(feed_url, delay=0.5)
-    if not r:
-        return deals
-
-    try:
-        root = ET.fromstring(r.content)
-    except ET.ParseError:
-        return deals
-
-    ns = {"atom": "http://www.w3.org/2005/Atom"}
-
-    # RSS 2.0
-    items = root.findall(".//item")
-    # Atom
-    if not items:
-        items = root.findall(".//atom:entry", ns) or root.findall(".//entry")
-
-    for item in items[:max_items]:
-        # Title
-        title_el = item.find("title")
-        title = title_el.text if title_el is not None else ""
-        if not title:
-            title = (item.find("atom:title", ns) or item.find("title") or type("", (), {"text": ""})()).text or ""
-
-        # Description / summary
-        desc_el = item.find("description") or item.find("summary") or item.find("atom:summary", ns)
-        raw_desc = desc_el.text or "" if desc_el is not None else ""
-        # Strip HTML tags
-        desc = BeautifulSoup(raw_desc, "html.parser").get_text(strip=True)[:200] if raw_desc else ""
-
-        # Link
-        link_el = item.find("link")
-        link = link_el.text if link_el is not None and link_el.text else ""
-
-        combined = f"{title} {desc}".lower()
-        retailer = find_retailer(combined)
-        if not retailer:
-            continue
-
-        # Look for a promo code pattern in title/desc
-        code_match = re.search(r"\b(code|promo|coupon)[:\s]+([A-Z0-9]{4,20})\b", title, re.IGNORECASE)
-        code = code_match.group(2).upper() if code_match else ""
-
-        # Extract discount string like "20% off", "$10 off"
-        disc_match = re.search(r"(\$?\d+%?\s*off|\d+%\s*off)", title, re.IGNORECASE)
-        discount = disc_match.group(0).title() if disc_match else ""
-
-        deal = build_deal(
-            retailer=retailer,
-            code=code,
-            description=title[:120],
-            discount=discount,
-            source="Unknown",
-            url=link,
-        )
-        deal = decorate_deal(deal)
-        if validate_deal(deal):
-            deals.append(deal)
-
-    print(f"  RSS ({source_name}): matched {len(deals)} deals to retailers")
-    return deals
-
-
-RSS_FEEDS = [
-    ("https://slickdeals.net/newsearch.php?mode=frontpage&searcharea=deals&searchin=first&rss=1", "Slickdeals"),
-    ("https://9to5toys.com/feed/", "9to5Toys"),
-    ("https://9to5mac.com/feed/", "9to5Mac"),
-    ("https://dealnews.com/rss/", "DealNews"),
-    ("https://www.bensdeals.com/rss/", "Brad's Deals"),
-]
+    return deals[:MAX_DEALS_PER_RETAILER]
 
 
 def scrape_retailer(retailer):
-    """Try all coupon sources for a single retailer, return best results."""
-    deals = []
-
-    # Try CouponFollow first
-    deals = scrape_couponfollow(retailer)
-
-    # If nothing, try Savings.com
-    if not deals:
-        deals = scrape_savings_com(retailer)
-
-    # If still nothing, try CouponCabin
-    if not deals:
-        deals = scrape_couponcabin(retailer)
-
-    return deals
+    """Official-only ingestion for one retailer."""
+    return dedupe_deals(scrape_official_site(retailer) + scrape_official_x(retailer))[:MAX_DEALS_PER_RETAILER]
 
 
-def get_fallback_deals():
-    """Curated, always-available deals used when every live scrape source
-    is blocked (403/404/empty). These are not scraped or code-validated —
-    just honest pointers to each retailer's own deals page — so the site
-    is never left completely empty.
-    """
-    fallback = []
-    for retailer in RETAILERS:
-        deal = build_deal(
-            retailer=retailer,
-            code="",
-            description=f"Browse current {retailer['name']} deals and clearance",
-            discount="",
-            source="Fallback",
-            url=f"https://www.{retailer['domain']}",
-            deal_type="deal",
-        )
-        fallback.append(decorate_deal(deal))
-    return fallback
-
-
-
-# --- Code Validation Logic ---
-def validate_code_against_aggregators(code, retailer):
-    """Cross-reference a coupon code against multiple aggregator sources.
-    
-    Checks the code against couponfollow, savings.com, and couponcabin
-    to verify the code appears on at least one other source.
-    Returns True if code is validated, False otherwise.
-    """
-    if not code or code.strip() == "":
-        return False
-    
-    aggregator_urls = [
-        f"https://couponfollow.com/site/{retailer.lower().replace(' ', '')}",
-        f"https://www.savings.com/store/{retailer.lower().replace(' ', '-')}",
-        f"https://www.couponcabin.com/coupons/{retailer.lower().replace(' ', '-')}",
-        f"https://www.retailmenot.com/view/{retailer.lower().replace(' ', '')}.com",
-    ]
-    
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    }
-    
-    validations = 0
-    sources_checked = 0
-    
-    for url in aggregator_urls:
-        try:
-            resp = requests.get(url, headers=headers, timeout=8)
-            if resp.status_code == 200:
-                sources_checked += 1
-                # Check if the code appears in the page content
-                if code.upper() in resp.text.upper():
-                    validations += 1
-                    validation_logger.info(f"Code '{code}' for {retailer} FOUND on {url}")
-        except Exception as e:
-            validation_logger.debug(f"Error checking {url}: {e}")
+def dedupe_deals(deals):
+    seen = set(); out = []
+    for deal in deals:
+        if deal.get("code"):
+            key = (deal.get("retailer_key"), deal.get("code"))
+        else:
+            key = (deal.get("retailer_key"), deal.get("description", "")[:80], deal.get("source_url"))
+        if key in seen:
             continue
-    
-    # Code is valid if found on at least 1 aggregator source, or if no sources could be checked
-    # (graceful degradation - don't block codes if aggregators are down)
-    if sources_checked == 0:
-        validation_logger.warning(f"No aggregator sources reachable for {retailer} code '{code}' - allowing by default")
-        return True
-    
-    is_valid = validations >= 1
-    if not is_valid:
-        validation_logger.warning(f"Code '{code}' for {retailer} NOT found on any of {sources_checked} aggregator sources")
-    return is_valid
+        seen.add(key); out.append(deal)
+    return out
+
+
+def is_fresh_official_deal(deal):
+    return validate_deal(deal)
+
+
+def public_deals():
+    data = load_deals()
+    deals = data.get("deals", []) if isinstance(data, dict) else []
+    return [decorate_deal(d) for d in deals if is_fresh_official_deal(d)]
+
+# --- Official-source validation logic ---
+def validate_code_against_aggregators(code, retailer):
+    """Deprecated compatibility shim. Third-party aggregators are not trusted."""
+    return False
 
 
 def validate_and_filter_deals(new_deals):
-    """Validate scraped deals and return only verified ones.
-    
-    Codes are cross-referenced against aggregator sources.
-    Invalid codes are logged but not published.
-    Only validated/working codes replace current live codes.
-    """
+    """Return only fresh, official-source deals/codes."""
     global INVALID_CODES_LOG
     validated_deals = []
     invalid_deals = []
-    
     for deal in new_deals:
-        code = deal.get("code", "")
-        retailer = deal.get("retailer", "")
-        
-        # Deals without codes (percentage-off links, etc.) pass through
-        if not code or code.strip() == "":
-            validated_deals.append(deal)
-            continue
-        
-        # Validate the code against aggregator sources
-        if validate_code_against_aggregators(code, retailer):
+        if is_fresh_official_deal(deal):
             deal["validated"] = True
-            deal["validated_at"] = datetime.now().isoformat()
+            deal["isVerified"] = True
+            deal.setdefault("validated_at", iso_now())
             validated_deals.append(deal)
         else:
-            # Log invalid code but do NOT publish
             invalid_entry = {
-                "code": code,
-                "retailer": retailer,
+                "code": deal.get("code", ""),
+                "retailer": deal.get("retailer", ""),
                 "description": deal.get("description", ""),
-                "reason": "Not found on aggregator sources",
-                "scraped_at": datetime.now().isoformat()
+                "source_url": deal.get("source_url", deal.get("url", "")),
+                "reason": "Rejected by official-source/freshness gate",
+                "scraped_at": iso_now(),
             }
             INVALID_CODES_LOG.append(invalid_entry)
             invalid_deals.append(deal)
-            validation_logger.info(
-                f"REJECTED: Code '{code}' for {retailer} - not validated by aggregators"
-            )
-    
-    validation_logger.info(
-        f"Validation complete: {len(validated_deals)} valid, {len(invalid_deals)} rejected"
-    )
-    return validated_deals
+    validation_logger.info("Official validation complete: %s valid, %s rejected", len(validated_deals), len(invalid_deals))
+    return dedupe_deals(validated_deals)
 
 
 def scrape_all():
-    """Scrape all retailers, validate codes, and only publish verified deals."""
+    """Scrape a rolling batch of official retailer sources and publish only fresh official deals."""
     global _scrape_status
-    _scrape_status = {"running": True, "last_run": None, "message": "Scraping in progress..."}
+    _scrape_status = {"running": True, "last_run": _scrape_status.get("last_run"), "message": "Official-source scrape in progress..."}
     all_new_deals = []
+    state = load_deals()
+    cursor = int(state.get("cursor", 0)) if isinstance(state, dict) else 0
+    batch = [RETAILERS[(cursor + i) % len(RETAILERS)] for i in range(min(SCRAPE_BATCH_SIZE, len(RETAILERS)))]
+    next_cursor = (cursor + len(batch)) % len(RETAILERS)
 
-    # Scrape retailers concurrently — sequential scraping of every source for
-    # every retailer is slow enough on Render's free-tier CPU that a run can
-    # stall out before ever reaching the status update below.
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        future_to_retailer = {executor.submit(scrape_retailer, r): r for r in RETAILERS}
-        for future in as_completed(future_to_retailer):
-            retailer = future_to_retailer[future]
+    with ThreadPoolExecutor(max_workers=min(6, len(batch) or 1)) as executor:
+        futures = {executor.submit(scrape_retailer, r): r for r in batch}
+        for fut in as_completed(futures):
+            retailer = futures[fut]
             try:
-                all_new_deals.extend(future.result())
+                all_new_deals.extend(fut.result())
             except Exception as e:
-                print(f"Error scraping {retailer['name']}: {e}")
+                validation_logger.warning("Error scraping %s: %s", retailer.get("name"), e)
 
-    # Validate codes against aggregator sources before publishing
-    validation_logger.info(f"Starting validation of {len(all_new_deals)} scraped deals...")
+    validation_logger.info("Starting official validation of %s candidates...", len(all_new_deals))
     validated_deals = validate_and_filter_deals(all_new_deals)
 
-    # If every live source is blocked/empty, fall back to curated data so
-    # the site is never left with nothing to show.
-    if not validated_deals:
-        validation_logger.warning("No live deals from any source — publishing fallback deals")
-        validated_deals = get_fallback_deals()
-
-    # Only replace live codes with validated ones
-    if validated_deals:
-        current_deals = load_deals().get("deals", [])
-        # Keep existing deals that aren't being replaced
-        existing_ids = {d.get("id") for d in validated_deals}
-        kept_deals = [d for d in current_deals if d.get("id") not in existing_ids]
-        # Merge: keep old deals + add new validated deals
-        final_deals = kept_deals + validated_deals
-        save_deals(final_deals)
-        validation_logger.info(f"Published {len(validated_deals)} validated deals, kept {len(kept_deals)} existing deals")
-    else:
-        validation_logger.warning("No validated deals to publish - keeping current live codes")
+    existing = state.get("deals", []) if isinstance(state, dict) else []
+    replacement_keys = {d.get("retailer_key") for d in validated_deals}
+    kept = [d for d in existing if d.get("retailer_key") not in replacement_keys and is_fresh_official_deal(d)]
+    final_deals = dedupe_deals(kept + validated_deals)
+    saved = save_deals(final_deals)
+    saved["cursor"] = next_cursor
+    saved["last_batch"] = [r.get("name") for r in batch]
+    saved["freshness_hours"] = FRESHNESS_HOURS
+    with open(DEALS_FILE, "w", encoding="utf-8") as f:
+        json.dump(saved, f, indent=2)
 
     _scrape_status = {
         "running": False,
-        "last_run": datetime.now().isoformat(),
-        "message": f"Completed: {len(validated_deals)} validated deals published, {len(INVALID_CODES_LOG)} codes rejected"
+        "last_run": iso_now(),
+        "message": f"Completed official scrape: {len(validated_deals)} fresh official deals published; {len(INVALID_CODES_LOG)} candidates rejected",
+        "last_batch": [r.get("name") for r in batch],
+        "freshness_hours": FRESHNESS_HOURS,
+        "next_cursor": next_cursor,
     }
     return validated_deals
 
@@ -597,34 +601,40 @@ def index():
 
 @app.route("/api/deals")
 def api_deals():
-    data = load_deals()
-    # Build retailer domain lookup
-    domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
-    # Ensure each deal has a url field pointing to the retailer website
-    deals = data.get("deals", []) if isinstance(data, dict) else []
-    for deal in deals:
-        retailer = deal.get("retailer", "")
-        domain = domain_map.get(retailer.lower(), "")
-        if domain:
-            deal["domain"] = domain
-            if not deal.get("url"):
-                deal["url"] = f"https://www.{domain}"
-        # Fix Macy's code: BEST1521 should be SHOP1521
-        if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
-            deal["code"] = "FRIEND"
-    data["total_deals"] = len(deals)
-    data["total_codes"] = sum(1 for d in deals if d.get("code"))
-    data["total"] = len(deals)
-    data["page"] = 1
-    data["pages"] = 1
-    for d in deals:
-        d["type"] = d.get("deal_type", "deal")
-        meta = next((r for r in RETAILERS if r["name"].lower() == d.get("retailer", "").lower()), {})
-        if not d.get("icon"):
-            d["icon"] = meta.get("icon", "")
-        if not d.get("color"):
-            d["color"] = meta.get("color", "#6c5ce7")
-    return jsonify(data)
+    deals = public_deals()
+    search = (request.args.get("search") or "").strip().lower()
+    category = (request.args.get("category") or "").strip().lower()
+    deal_type = (request.args.get("type") or "").strip().lower()
+    sort = (request.args.get("sort") or "newest").strip().lower()
+    page = max(1, int(request.args.get("page", 1)))
+    limit = min(100, max(1, int(request.args.get("limit", 100))))
+
+    if search:
+        deals = [d for d in deals if search in " ".join([d.get("retailer", ""), d.get("description", ""), d.get("code", ""), d.get("source", "")]).lower()]
+    if category:
+        deals = [d for d in deals if d.get("category", "").lower() == category]
+    if deal_type:
+        deals = [d for d in deals if d.get("type", "").lower() == deal_type]
+
+    if sort in {"discount", "best"}:
+        deals.sort(key=lambda d: int((re.search(r"(\d+)", d.get("discount", "")) or [0, 0])[1]), reverse=True)
+    else:
+        deals.sort(key=lambda d: d.get("source_checked_at", ""), reverse=True)
+
+    total = len(deals)
+    pages = max(1, (total + limit - 1) // limit)
+    start = (page - 1) * limit
+    sliced = deals[start:start + limit]
+    return jsonify({
+        "deals": sliced,
+        "page": page,
+        "pages": pages,
+        "limit": limit,
+        "total": total,
+        "total_deals": total,
+        "total_codes": sum(1 for d in deals if d.get("code")),
+        "freshness_hours": FRESHNESS_HOURS,
+    })
 
 
 @app.route("/api/scrape", methods=["POST"])
@@ -647,7 +657,7 @@ def api_status():
 
 @app.route("/healthz")
 def healthz():
-    """Lightweight endpoint for the self-ping keep-alive job (and uptime checks)."""
+    """Lightweight endpoint for uptime checks."""
     return jsonify({"status": "ok"})
 
 
@@ -661,8 +671,7 @@ def api_retailers():
 
 @app.route("/api/categories")
 def api_categories():
-    data = load_deals()
-    deals = data.get("deals", [])
+    deals = public_deals()
     cat_meta = {
         "services": {"color": "#8338EC", "icon": "\ud83d\udd27", "label": "Services"},
         "electronics": {"color": "#8338EC", "icon": "\ud83d\udcfa", "label": "Electronics"},
@@ -686,64 +695,54 @@ def api_categories():
 
 @app.route("/api/deals/trending")
 def api_deals_trending():
-    data = load_deals()
-    deals = data.get("deals", [])
+    deals = public_deals()
     def get_discount(d):
-        import re as _re
-        match = _re.search(r"(\d+)%", d.get("description", ""))
+        match = re.search(r"(\d+)", d.get("discount", "") or d.get("description", ""))
         return int(match.group(1)) if match else 0
-    trending = sorted(deals, key=get_discount, reverse=True)[:10]
-    domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
-    retailer_meta = {r["name"].lower(): r for r in RETAILERS}
-    for deal in trending:
-        deal["isTrending"] = True
-        r_key = deal.get("retailer", "").lower()
-        meta = retailer_meta.get(r_key, {})
-        if not deal.get("icon"):
-            deal["icon"] = meta.get("icon", "")
-        if not deal.get("color"):
-            deal["color"] = meta.get("color", "#6c5ce7")
-        if not deal.get("url"):
-            domain = domain_map.get(r_key, "")
-            if domain:
-                deal["url"] = f"https://www.{domain}"
+    trending = sorted(deals, key=lambda d: (bool(d.get("code")), get_discount(d), d.get("source_checked_at", "")), reverse=True)[:10]
+    for d in trending:
+        d["isTrending"] = True
     return jsonify({"deals": trending})
 
 
 @app.route("/api/deals/featured")
 def api_deals_featured():
-    data = load_deals()
-    deals = data.get("deals", [])
-    if deals:
-        domain_map = {r["name"].lower(): r["domain"] for r in RETAILERS}
-        for deal in deals:
-            if deal.get("code"):
-                retailer = deal.get("retailer", "")
-                domain = domain_map.get(retailer.lower(), "")
-                if domain:
-                    deal["domain"] = domain
-                    if not deal.get("url"):
-                        deal["url"] = f"https://www.{domain}"
-                if retailer.lower() == "macys" and deal.get("code") == "BEST1521":
-                    deal["code"] = "FRIEND"
-                return jsonify({"deal": deal})
-        deal = deals[0]
-        if not deal.get("url"):
-            domain = domain_map.get(deal.get("retailer", "").lower(), "")
-            if domain:
-                deal["url"] = f"https://www.{domain}"
-        return jsonify({"deal": deal})
-    return jsonify({"deal": None})
+    deals = public_deals()
+    coded = [d for d in deals if d.get("code")]
+    deal = (coded or deals or [None])[0]
+    return jsonify({"deal": deal})
 
 
 @app.route("/api/feedback", methods=["POST"])
 def api_feedback():
-    from flask import request
     data = request.get_json(silent=True) or {}
-    deal_id = data.get("dealId", "")
-    feedback_type = data.get("type", "")
+    deal_id = re.sub(r"[^a-zA-Z0-9_-]", "", str(data.get("dealId", "")))[:64]
+    feedback_type = str(data.get("type", ""))[:16]
+    if feedback_type not in {"worked", "failed", "yes", "no", "true", "false"}:
+        feedback_type = "unknown"
     return jsonify({"status": "ok", "dealId": deal_id, "type": feedback_type})
 
+
+@app.route("/api/source-status")
+def api_source_status():
+    deals = public_deals()
+    by_retailer = {}
+    for r in RETAILERS:
+        by_retailer[r["slug"]] = {
+            "name": r["name"], "domain": r["domain"],
+            "official_x_handles": r.get("official_x_handles", []),
+            "promo_paths": r.get("promo_paths", []),
+            "fresh_deals": 0, "fresh_codes": 0,
+        }
+    for d in deals:
+        key = d.get("retailer_key")
+        for slug, item in by_retailer.items():
+            if normalize_retailer_key(item["name"]) == key:
+                item["fresh_deals"] += 1
+                if d.get("code"):
+                    item["fresh_codes"] += 1
+                break
+    return jsonify({"freshness_hours": FRESHNESS_HOURS, "retailers": list(by_retailer.values())})
 
 
 @app.route("/manifest.json")
@@ -752,48 +751,17 @@ def manifest():
 
 
 
-def keep_alive_ping():
-    """Self-ping so Render's free tier never sees 15 minutes of inactivity
-    and spins the dyno down (which causes ~40-50s cold starts on the next
-    request)."""
-    if not RENDER_EXTERNAL_URL:
-        return
-    try:
-        SESSION.get(f"{RENDER_EXTERNAL_URL}/healthz", timeout=10)
-        validation_logger.info("Keep-alive ping OK")
-    except Exception as e:
-        validation_logger.warning(f"Keep-alive ping failed: {e}")
-
-
-# --- APScheduler: Automated 6-hour scraping schedule + keep-alive ---
+# --- APScheduler: Automated 15-minute rolling official-source scraping schedule ---
 scheduler = BackgroundScheduler()
-
-_scrape_job_kwargs = dict(
+scheduler.add_job(
     func=scrape_all,
-    trigger=IntervalTrigger(hours=6),
+    trigger=IntervalTrigger(minutes=15),
     id='scheduled_scrape',
-    name='Scrape all retailers every 6 hours',
-    replace_existing=True,
+    name='Scrape a rolling batch of official retailer sources every 15 minutes',
+    replace_existing=True
 )
-# Run the first scrape immediately (rather than waiting a full 6 hours) when
-# there's no cached data yet. This works whether the app is started with
-# `python app.py` or imported by gunicorn, unlike a `__main__`-gated thread.
-if not os.path.exists(DEALS_FILE):
-    _scrape_job_kwargs["next_run_time"] = datetime.now()
-scheduler.add_job(**_scrape_job_kwargs)
-
-if RENDER_EXTERNAL_URL:
-    scheduler.add_job(
-        func=keep_alive_ping,
-        trigger=IntervalTrigger(minutes=10),
-        id='keep_alive_ping',
-        name='Self-ping to prevent Render free-tier sleep',
-        replace_existing=True,
-    )
-    validation_logger.info(f"Keep-alive ping scheduled every 10 min against {RENDER_EXTERNAL_URL}")
-
 scheduler.start()
-validation_logger.info("APScheduler started: scraping every 6 hours")
+validation_logger.info("APScheduler started: rolling official-source scrape every 15 minutes")
 
 # API endpoint to view invalid/rejected codes
 @app.route("/api/invalid-codes")
@@ -802,4 +770,8 @@ def api_invalid_codes():
 
 
 if __name__ == "__main__":
+    # Run an initial scrape if no cached data exists
+    if not os.path.exists(DEALS_FILE):
+        print("No cached data — running initial scrape…")
+        threading.Thread(target=scrape_all, daemon=True).start()
     app.run(host="127.0.0.1", port=5050, debug=False)

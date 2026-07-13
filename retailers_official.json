@@ -1,0 +1,2601 @@
+[
+  {
+    "category": "big-box",
+    "color": "#FF9900",
+    "domain": "amazon.com",
+    "icon": "🛒",
+    "name": "Amazon",
+    "slug": "amazon",
+    "allowed_domains": [
+      "amazon.com",
+      "www.amazon.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "big-box",
+    "color": "#0071CE",
+    "domain": "walmart.com",
+    "icon": "🏪",
+    "name": "Walmart",
+    "slug": "walmart",
+    "allowed_domains": [
+      "walmart.com",
+      "www.walmart.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "big-box",
+    "color": "#CC0000",
+    "domain": "target.com",
+    "icon": "🎯",
+    "name": "Target",
+    "slug": "target",
+    "allowed_domains": [
+      "target.com",
+      "www.target.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/c/target-deals/-/N-4xw74",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#111111",
+    "domain": "nike.com",
+    "icon": "👟",
+    "name": "Nike",
+    "slug": "nike",
+    "allowed_domains": [
+      "nike.com",
+      "www.nike.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#E50010",
+    "domain": "hm.com",
+    "icon": "👗",
+    "keywords": [
+      "h&m",
+      "hm"
+    ],
+    "name": "H&M",
+    "slug": "h-and-m",
+    "allowed_domains": [
+      "hm.com",
+      "www.hm.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#1A1A1A",
+    "domain": "zara.com",
+    "icon": "👘",
+    "name": "Zara",
+    "slug": "zara",
+    "allowed_domains": [
+      "www.zara.com",
+      "zara.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#2D3643",
+    "domain": "asos.com",
+    "icon": "🧥",
+    "name": "ASOS",
+    "slug": "asos",
+    "allowed_domains": [
+      "asos.com",
+      "www.asos.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#0046BE",
+    "domain": "bestbuy.com",
+    "icon": "💻",
+    "keywords": [
+      "best buy",
+      "bestbuy"
+    ],
+    "name": "Best Buy",
+    "slug": "best-buy",
+    "allowed_domains": [
+      "bestbuy.com",
+      "www.bestbuy.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/site/top-deals",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#FF6600",
+    "domain": "newegg.com",
+    "icon": "🖥️",
+    "name": "Newegg",
+    "slug": "newegg",
+    "allowed_domains": [
+      "newegg.com",
+      "www.newegg.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/promotions",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#002F65",
+    "domain": "bhphotovideo.com",
+    "icon": "📷",
+    "keywords": [
+      "b&h",
+      "bhphotovideo",
+      "b and h"
+    ],
+    "name": "B&H",
+    "slug": "b-and-h",
+    "allowed_domains": [
+      "bhphotovideo.com",
+      "www.bhphotovideo.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#FF3008",
+    "domain": "doordash.com",
+    "icon": "🚪",
+    "keywords": [
+      "doordash",
+      "door dash"
+    ],
+    "name": "DoorDash",
+    "slug": "doordash",
+    "allowed_domains": [
+      "doordash.com",
+      "www.doordash.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#F63440",
+    "domain": "grubhub.com",
+    "icon": "🍔",
+    "name": "Grubhub",
+    "slug": "grubhub",
+    "allowed_domains": [
+      "grubhub.com",
+      "www.grubhub.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#06C167",
+    "domain": "ubereats.com",
+    "icon": "🛵",
+    "keywords": [
+      "uber eats",
+      "ubereats"
+    ],
+    "name": "Uber Eats",
+    "slug": "uber-eats",
+    "allowed_domains": [
+      "ubereats.com",
+      "www.ubereats.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "health",
+    "color": "#CC0000",
+    "domain": "cvs.com",
+    "icon": "💊",
+    "keywords": [
+      "cvs",
+      "cvs pharmacy"
+    ],
+    "name": "CVS",
+    "slug": "cvs",
+    "allowed_domains": [
+      "cvs.com",
+      "www.cvs.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#E21A2C",
+    "domain": "macys.com",
+    "icon": "🛍",
+    "keywords": [
+      "macys",
+      "macy's",
+      "macys.com"
+    ],
+    "name": "Macys",
+    "promo_paths": [
+      "/shop/coupons-deals"
+    ],
+    "slug": "macys",
+    "allowed_domains": [
+      "macys.com",
+      "www.macys.com"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#F96302",
+    "domain": "homedepot.com",
+    "icon": "🔨",
+    "keywords": [
+      "home depot",
+      "homedepot"
+    ],
+    "name": "Home Depot",
+    "slug": "home-depot",
+    "allowed_domains": [
+      "homedepot.com",
+      "www.homedepot.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#004990",
+    "domain": "lowes.com",
+    "icon": "🏠",
+    "keywords": [
+      "lowe's",
+      "lowes"
+    ],
+    "name": "Lowe's",
+    "slug": "lowes",
+    "allowed_domains": [
+      "lowes.com",
+      "www.lowes.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#000000",
+    "domain": "adidas.com",
+    "icon": "👟",
+    "name": "Adidas",
+    "slug": "adidas",
+    "allowed_domains": [
+      "adidas.com",
+      "www.adidas.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#1F1F1F",
+    "domain": "nordstrom.com",
+    "icon": "🧣",
+    "name": "Nordstrom",
+    "slug": "nordstrom",
+    "allowed_domains": [
+      "nordstrom.com",
+      "www.nordstrom.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "beauty",
+    "color": "#000000",
+    "domain": "sephora.com",
+    "icon": "💄",
+    "name": "Sephora",
+    "slug": "sephora",
+    "allowed_domains": [
+      "sephora.com",
+      "www.sephora.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "beauty",
+    "color": "#F26924",
+    "domain": "ulta.com",
+    "icon": "💅",
+    "keywords": [
+      "ulta",
+      "ulta beauty"
+    ],
+    "name": "Ulta",
+    "slug": "ulta",
+    "allowed_domains": [
+      "ulta.com",
+      "www.ulta.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#7B0099",
+    "domain": "wayfair.com",
+    "icon": "🛋️",
+    "name": "Wayfair",
+    "slug": "wayfair",
+    "allowed_domains": [
+      "wayfair.com",
+      "www.wayfair.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#007DB8",
+    "domain": "dell.com",
+    "icon": "💻",
+    "name": "Dell",
+    "slug": "dell",
+    "allowed_domains": [
+      "dell.com",
+      "www.dell.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#0096D6",
+    "domain": "hp.com",
+    "icon": "🖨️",
+    "keywords": [
+      "hp",
+      "hp.com"
+    ],
+    "name": "HP",
+    "slug": "hp",
+    "allowed_domains": [
+      "hp.com",
+      "www.hp.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#E2231A",
+    "domain": "lenovo.com",
+    "icon": "💻",
+    "name": "Lenovo",
+    "slug": "lenovo",
+    "allowed_domains": [
+      "lenovo.com",
+      "www.lenovo.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#6E2585",
+    "domain": "kohls.com",
+    "icon": "🛍️",
+    "keywords": [
+      "kohl's",
+      "kohls"
+    ],
+    "name": "Kohl's",
+    "slug": "kohls",
+    "allowed_domains": [
+      "kohls.com",
+      "www.kohls.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#C8102E",
+    "domain": "jcpenney.com",
+    "icon": "🛍️",
+    "keywords": [
+      "jcpenney",
+      "jc penney"
+    ],
+    "name": "JCPenney",
+    "slug": "jcpenney",
+    "allowed_domains": [
+      "jcpenney.com",
+      "www.jcpenney.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#002B5C",
+    "domain": "gap.com",
+    "icon": "👖",
+    "name": "Gap",
+    "slug": "gap",
+    "allowed_domains": [
+      "gap.com",
+      "www.gap.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#12356F",
+    "domain": "oldnavy.com",
+    "icon": "👕",
+    "keywords": [
+      "old navy",
+      "oldnavy"
+    ],
+    "name": "Old Navy",
+    "slug": "old-navy",
+    "allowed_domains": [
+      "oldnavy.com",
+      "www.oldnavy.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#2E2A25",
+    "domain": "bananarepublic.com",
+    "icon": "👔",
+    "keywords": [
+      "banana republic"
+    ],
+    "name": "Banana Republic",
+    "slug": "banana-republic",
+    "allowed_domains": [
+      "bananarepublic.com",
+      "www.bananarepublic.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#C41230",
+    "domain": "levi.com",
+    "icon": "👖",
+    "keywords": [
+      "levi's",
+      "levis"
+    ],
+    "name": "Levi's",
+    "slug": "levis",
+    "allowed_domains": [
+      "levi.com",
+      "www.levi.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "sports",
+    "color": "#101820",
+    "domain": "underarmour.com",
+    "icon": "🏃",
+    "keywords": [
+      "under armour",
+      "underarmour"
+    ],
+    "name": "Under Armour",
+    "slug": "under-armour",
+    "allowed_domains": [
+      "underarmour.com",
+      "www.underarmour.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "sports",
+    "color": "#CF0A2C",
+    "domain": "newbalance.com",
+    "icon": "👟",
+    "keywords": [
+      "new balance"
+    ],
+    "name": "New Balance",
+    "slug": "new-balance",
+    "allowed_domains": [
+      "newbalance.com",
+      "www.newbalance.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "sports",
+    "color": "#E41C24",
+    "domain": "reebok.com",
+    "icon": "👟",
+    "name": "Reebok",
+    "slug": "reebok",
+    "allowed_domains": [
+      "reebok.com",
+      "www.reebok.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "sports",
+    "color": "#242B2F",
+    "domain": "puma.com",
+    "icon": "👟",
+    "name": "Puma",
+    "slug": "puma",
+    "allowed_domains": [
+      "puma.com",
+      "www.puma.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "sports",
+    "color": "#000000",
+    "domain": "footlocker.com",
+    "icon": "👟",
+    "keywords": [
+      "foot locker",
+      "footlocker"
+    ],
+    "name": "Foot Locker",
+    "slug": "foot-locker",
+    "allowed_domains": [
+      "footlocker.com",
+      "www.footlocker.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "sports",
+    "color": "#003DA5",
+    "domain": "finishline.com",
+    "icon": "👟",
+    "keywords": [
+      "finish line",
+      "finishline"
+    ],
+    "name": "Finish Line",
+    "slug": "finish-line",
+    "allowed_domains": [
+      "finishline.com",
+      "www.finishline.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#00205B",
+    "domain": "ae.com",
+    "icon": "🦅",
+    "keywords": [
+      "american eagle",
+      "aerie"
+    ],
+    "name": "American Eagle",
+    "slug": "american-eagle",
+    "allowed_domains": [
+      "ae.com",
+      "www.ae.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#1C2B39",
+    "domain": "abercrombie.com",
+    "icon": "🧥",
+    "keywords": [
+      "abercrombie"
+    ],
+    "name": "Abercrombie & Fitch",
+    "slug": "abercrombie-and-fitch",
+    "allowed_domains": [
+      "abercrombie.com",
+      "www.abercrombie.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#13294B",
+    "domain": "hollisterco.com",
+    "icon": "🌴",
+    "name": "Hollister",
+    "slug": "hollister",
+    "allowed_domains": [
+      "hollisterco.com",
+      "www.hollisterco.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#F7D117",
+    "domain": "forever21.com",
+    "icon": "👗",
+    "keywords": [
+      "forever 21",
+      "forever21"
+    ],
+    "name": "Forever 21",
+    "slug": "forever-21",
+    "allowed_domains": [
+      "forever21.com",
+      "www.forever21.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#000000",
+    "domain": "shein.com",
+    "icon": "👗",
+    "name": "Shein",
+    "slug": "shein",
+    "allowed_domains": [
+      "shein.com",
+      "www.shein.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#FF0000",
+    "domain": "uniqlo.com",
+    "icon": "👕",
+    "name": "Uniqlo",
+    "slug": "uniqlo",
+    "allowed_domains": [
+      "uniqlo.com",
+      "www.uniqlo.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#000000",
+    "domain": "express.com",
+    "icon": "👔",
+    "keywords": [
+      "express.com"
+    ],
+    "name": "Express",
+    "slug": "express",
+    "allowed_domains": [
+      "express.com",
+      "www.express.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#E5A0C6",
+    "domain": "victoriassecret.com",
+    "icon": "🎀",
+    "keywords": [
+      "victoria's secret",
+      "victorias secret"
+    ],
+    "name": "Victoria's Secret",
+    "slug": "victorias-secret",
+    "allowed_domains": [
+      "victoriassecret.com",
+      "www.victoriassecret.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "beauty",
+    "color": "#005699",
+    "domain": "bathandbodyworks.com",
+    "icon": "🧴",
+    "keywords": [
+      "bath & body works",
+      "bath and body works"
+    ],
+    "name": "Bath & Body Works",
+    "slug": "bath-and-body-works",
+    "allowed_domains": [
+      "bathandbodyworks.com",
+      "www.bathandbodyworks.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#D31334",
+    "domain": "lululemon.com",
+    "icon": "🧘",
+    "name": "Lululemon",
+    "slug": "lululemon",
+    "allowed_domains": [
+      "lululemon.com",
+      "www.lululemon.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#5BC236",
+    "domain": "crocs.com",
+    "icon": "🐊",
+    "name": "Crocs",
+    "slug": "crocs",
+    "allowed_domains": [
+      "crocs.com",
+      "www.crocs.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#0057B8",
+    "domain": "skechers.com",
+    "icon": "👟",
+    "name": "Skechers",
+    "slug": "skechers",
+    "allowed_domains": [
+      "skechers.com",
+      "www.skechers.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#C8102E",
+    "domain": "vans.com",
+    "icon": "🛹",
+    "name": "Vans",
+    "slug": "vans",
+    "allowed_domains": [
+      "vans.com",
+      "www.vans.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#000000",
+    "domain": "converse.com",
+    "icon": "👟",
+    "name": "Converse",
+    "slug": "converse",
+    "allowed_domains": [
+      "converse.com",
+      "www.converse.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#F2A900",
+    "domain": "timberland.com",
+    "icon": "🥾",
+    "name": "Timberland",
+    "slug": "timberland",
+    "allowed_domains": [
+      "timberland.com",
+      "www.timberland.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#1D1D1B",
+    "domain": "thenorthface.com",
+    "icon": "🏔️",
+    "keywords": [
+      "north face",
+      "thenorthface"
+    ],
+    "name": "The North Face",
+    "slug": "the-north-face",
+    "allowed_domains": [
+      "thenorthface.com",
+      "www.thenorthface.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "sports",
+    "color": "#003DA5",
+    "domain": "columbia.com",
+    "icon": "🧗",
+    "keywords": [
+      "columbia sportswear",
+      "columbia"
+    ],
+    "name": "Columbia",
+    "slug": "columbia",
+    "allowed_domains": [
+      "columbia.com",
+      "www.columbia.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "sports",
+    "color": "#204E63",
+    "domain": "patagonia.com",
+    "icon": "⛰️",
+    "name": "Patagonia",
+    "slug": "patagonia",
+    "allowed_domains": [
+      "patagonia.com",
+      "www.patagonia.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#0072CE",
+    "domain": "carters.com",
+    "icon": "👶",
+    "keywords": [
+      "carter's",
+      "carters"
+    ],
+    "name": "Carter's",
+    "slug": "carters",
+    "allowed_domains": [
+      "carters.com",
+      "www.carters.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "fashion",
+    "color": "#0058A0",
+    "domain": "zappos.com",
+    "icon": "👞",
+    "name": "Zappos",
+    "slug": "zappos",
+    "allowed_domains": [
+      "www.zappos.com",
+      "zappos.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "health",
+    "color": "#E31837",
+    "domain": "walgreens.com",
+    "icon": "💊",
+    "name": "Walgreens",
+    "slug": "walgreens",
+    "allowed_domains": [
+      "walgreens.com",
+      "www.walgreens.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "health",
+    "color": "#1F5DA0",
+    "domain": "riteaid.com",
+    "icon": "💊",
+    "keywords": [
+      "rite aid",
+      "riteaid"
+    ],
+    "name": "Rite Aid",
+    "slug": "rite-aid",
+    "allowed_domains": [
+      "riteaid.com",
+      "www.riteaid.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "health",
+    "color": "#EE2E24",
+    "domain": "gnc.com",
+    "icon": "💪",
+    "name": "GNC",
+    "slug": "gnc",
+    "allowed_domains": [
+      "gnc.com",
+      "www.gnc.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "health",
+    "color": "#007A33",
+    "domain": "vitaminshoppe.com",
+    "icon": "💊",
+    "keywords": [
+      "vitamin shoppe"
+    ],
+    "name": "Vitamin Shoppe",
+    "slug": "vitamin-shoppe",
+    "allowed_domains": [
+      "vitaminshoppe.com",
+      "www.vitaminshoppe.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "health",
+    "color": "#458500",
+    "domain": "iherb.com",
+    "icon": "🌿",
+    "name": "iHerb",
+    "slug": "iherb",
+    "allowed_domains": [
+      "iherb.com",
+      "www.iherb.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "beauty",
+    "color": "#EC1C24",
+    "domain": "sallybeauty.com",
+    "icon": "💇",
+    "keywords": [
+      "sally beauty"
+    ],
+    "name": "Sally Beauty",
+    "slug": "sally-beauty",
+    "allowed_domains": [
+      "sallybeauty.com",
+      "www.sallybeauty.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "beauty",
+    "color": "#000000",
+    "domain": "elfcosmetics.com",
+    "icon": "💄",
+    "keywords": [
+      "e.l.f.",
+      "elf cosmetics"
+    ],
+    "name": "e.l.f. Cosmetics",
+    "slug": "elf-cosmetics",
+    "allowed_domains": [
+      "elfcosmetics.com",
+      "www.elfcosmetics.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#1428A0",
+    "domain": "samsung.com",
+    "icon": "📱",
+    "name": "Samsung",
+    "slug": "samsung",
+    "allowed_domains": [
+      "samsung.com",
+      "www.samsung.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#737373",
+    "domain": "microsoft.com",
+    "icon": "🪟",
+    "name": "Microsoft",
+    "slug": "microsoft",
+    "allowed_domains": [
+      "microsoft.com",
+      "www.microsoft.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#000000",
+    "domain": "bose.com",
+    "icon": "🎧",
+    "name": "Bose",
+    "slug": "bose",
+    "allowed_domains": [
+      "bose.com",
+      "www.bose.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#000000",
+    "domain": "sonos.com",
+    "icon": "🔊",
+    "name": "Sonos",
+    "slug": "sonos",
+    "allowed_domains": [
+      "sonos.com",
+      "www.sonos.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#00A3E0",
+    "domain": "gopro.com",
+    "icon": "📹",
+    "name": "GoPro",
+    "slug": "gopro",
+    "allowed_domains": [
+      "gopro.com",
+      "www.gopro.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#00A7E1",
+    "domain": "anker.com",
+    "icon": "🔋",
+    "name": "Anker",
+    "slug": "anker",
+    "allowed_domains": [
+      "anker.com",
+      "www.anker.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#00B8FC",
+    "domain": "logitech.com",
+    "icon": "🖱️",
+    "name": "Logitech",
+    "slug": "logitech",
+    "allowed_domains": [
+      "logitech.com",
+      "www.logitech.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#44D62C",
+    "domain": "razer.com",
+    "icon": "🎮",
+    "name": "Razer",
+    "slug": "razer",
+    "allowed_domains": [
+      "razer.com",
+      "www.razer.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#1B4E9B",
+    "domain": "adorama.com",
+    "icon": "📷",
+    "name": "Adorama",
+    "slug": "adorama",
+    "allowed_domains": [
+      "adorama.com",
+      "www.adorama.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#00529B",
+    "domain": "crutchfield.com",
+    "icon": "🔈",
+    "name": "Crutchfield",
+    "slug": "crutchfield",
+    "allowed_domains": [
+      "crutchfield.com",
+      "www.crutchfield.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#231F20",
+    "domain": "monoprice.com",
+    "icon": "🔌",
+    "name": "Monoprice",
+    "slug": "monoprice",
+    "allowed_domains": [
+      "monoprice.com",
+      "www.monoprice.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "tech",
+    "color": "#EE3124",
+    "domain": "gamestop.com",
+    "icon": "🎮",
+    "keywords": [
+      "gamestop",
+      "game stop"
+    ],
+    "name": "GameStop",
+    "slug": "gamestop",
+    "allowed_domains": [
+      "gamestop.com",
+      "www.gamestop.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#0058A3",
+    "domain": "ikea.com",
+    "icon": "🪑",
+    "name": "IKEA",
+    "slug": "ikea",
+    "allowed_domains": [
+      "ikea.com",
+      "www.ikea.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#C8102E",
+    "domain": "overstock.com",
+    "icon": "🛋️",
+    "name": "Overstock",
+    "slug": "overstock",
+    "allowed_domains": [
+      "overstock.com",
+      "www.overstock.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#3B3B3B",
+    "domain": "williams-sonoma.com",
+    "icon": "🍳",
+    "keywords": [
+      "williams-sonoma",
+      "williams sonoma"
+    ],
+    "name": "Williams-Sonoma",
+    "slug": "williams-sonoma",
+    "allowed_domains": [
+      "williams-sonoma.com",
+      "www.williams-sonoma.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#3E3D3B",
+    "domain": "potterybarn.com",
+    "icon": "🏺",
+    "keywords": [
+      "pottery barn",
+      "potterybarn"
+    ],
+    "name": "Pottery Barn",
+    "slug": "pottery-barn",
+    "allowed_domains": [
+      "potterybarn.com",
+      "www.potterybarn.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#000000",
+    "domain": "crateandbarrel.com",
+    "icon": "📦",
+    "keywords": [
+      "crate & barrel",
+      "crate and barrel"
+    ],
+    "name": "Crate & Barrel",
+    "slug": "crate-and-barrel",
+    "allowed_domains": [
+      "crateandbarrel.com",
+      "www.crateandbarrel.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#3A3A38",
+    "domain": "westelm.com",
+    "icon": "🛏️",
+    "keywords": [
+      "west elm",
+      "westelm"
+    ],
+    "name": "West Elm",
+    "slug": "west-elm",
+    "allowed_domains": [
+      "westelm.com",
+      "www.westelm.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "home",
+    "color": "#0B2D5B",
+    "domain": "ashleyfurniture.com",
+    "icon": "🛋️",
+    "keywords": [
+      "ashley furniture",
+      "ashley homestore"
+    ],
+    "name": "Ashley Furniture",
+    "slug": "ashley-furniture",
+    "allowed_domains": [
+      "ashleyfurniture.com",
+      "www.ashleyfurniture.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "pets",
+    "color": "#1C49C2",
+    "domain": "chewy.com",
+    "icon": "🐶",
+    "name": "Chewy",
+    "slug": "chewy",
+    "allowed_domains": [
+      "chewy.com",
+      "www.chewy.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "pets",
+    "color": "#001952",
+    "domain": "petco.com",
+    "icon": "🐾",
+    "name": "Petco",
+    "slug": "petco",
+    "allowed_domains": [
+      "petco.com",
+      "www.petco.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "pets",
+    "color": "#0079C1",
+    "domain": "petsmart.com",
+    "icon": "🐱",
+    "name": "PetSmart",
+    "slug": "petsmart",
+    "allowed_domains": [
+      "petsmart.com",
+      "www.petsmart.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "office",
+    "color": "#CC0000",
+    "domain": "staples.com",
+    "icon": "📎",
+    "name": "Staples",
+    "slug": "staples",
+    "allowed_domains": [
+      "staples.com",
+      "www.staples.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "office",
+    "color": "#D71920",
+    "domain": "officedepot.com",
+    "icon": "🖇️",
+    "keywords": [
+      "office depot",
+      "officemax"
+    ],
+    "name": "Office Depot",
+    "slug": "office-depot",
+    "allowed_domains": [
+      "officedepot.com",
+      "www.officedepot.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "marketplace",
+    "color": "#E53238",
+    "domain": "ebay.com",
+    "icon": "🏷️",
+    "name": "eBay",
+    "slug": "ebay",
+    "allowed_domains": [
+      "ebay.com",
+      "www.ebay.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "marketplace",
+    "color": "#F1641E",
+    "domain": "etsy.com",
+    "icon": "🧶",
+    "name": "Etsy",
+    "slug": "etsy",
+    "allowed_domains": [
+      "etsy.com",
+      "www.etsy.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "marketplace",
+    "color": "#E62E04",
+    "domain": "aliexpress.com",
+    "icon": "📦",
+    "name": "AliExpress",
+    "slug": "aliexpress",
+    "allowed_domains": [
+      "aliexpress.com",
+      "www.aliexpress.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#43B02A",
+    "domain": "instacart.com",
+    "icon": "🥕",
+    "name": "Instacart",
+    "slug": "instacart",
+    "allowed_domains": [
+      "instacart.com",
+      "www.instacart.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#006491",
+    "domain": "dominos.com",
+    "icon": "🍕",
+    "keywords": [
+      "domino's",
+      "dominos"
+    ],
+    "name": "Domino's",
+    "slug": "dominos",
+    "allowed_domains": [
+      "dominos.com",
+      "www.dominos.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#EE3124",
+    "domain": "pizzahut.com",
+    "icon": "🍕",
+    "keywords": [
+      "pizza hut",
+      "pizzahut"
+    ],
+    "name": "Pizza Hut",
+    "slug": "pizza-hut",
+    "allowed_domains": [
+      "pizzahut.com",
+      "www.pizzahut.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#00693E",
+    "domain": "papajohns.com",
+    "icon": "🍕",
+    "keywords": [
+      "papa john's",
+      "papa johns"
+    ],
+    "name": "Papa John's",
+    "slug": "papa-johns",
+    "allowed_domains": [
+      "papajohns.com",
+      "www.papajohns.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#99CC33",
+    "domain": "hellofresh.com",
+    "icon": "🥗",
+    "keywords": [
+      "hellofresh",
+      "hello fresh"
+    ],
+    "name": "HelloFresh",
+    "slug": "hellofresh",
+    "allowed_domains": [
+      "hellofresh.com",
+      "www.hellofresh.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "food",
+    "color": "#0F346C",
+    "domain": "blueapron.com",
+    "icon": "🍽️",
+    "keywords": [
+      "blue apron",
+      "blueapron"
+    ],
+    "name": "Blue Apron",
+    "slug": "blue-apron",
+    "allowed_domains": [
+      "blueapron.com",
+      "www.blueapron.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "travel",
+    "color": "#FFC72C",
+    "domain": "expedia.com",
+    "icon": "✈️",
+    "name": "Expedia",
+    "slug": "expedia",
+    "allowed_domains": [
+      "expedia.com",
+      "www.expedia.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "travel",
+    "color": "#D32F2F",
+    "domain": "hotels.com",
+    "icon": "🏨",
+    "keywords": [
+      "hotels.com"
+    ],
+    "name": "Hotels.com",
+    "slug": "hotelscom",
+    "allowed_domains": [
+      "hotels.com",
+      "www.hotels.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "travel",
+    "color": "#0068EF",
+    "domain": "priceline.com",
+    "icon": "🧳",
+    "name": "Priceline",
+    "slug": "priceline",
+    "allowed_domains": [
+      "priceline.com",
+      "www.priceline.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  },
+  {
+    "category": "travel",
+    "color": "#003580",
+    "domain": "booking.com",
+    "icon": "🏖️",
+    "keywords": [
+      "booking.com"
+    ],
+    "name": "Booking.com",
+    "slug": "bookingcom",
+    "allowed_domains": [
+      "booking.com",
+      "www.booking.com"
+    ],
+    "promo_paths": [
+      "/",
+      "/sale",
+      "/deals",
+      "/offers",
+      "/coupons",
+      "/coupon",
+      "/promo",
+      "/promotions"
+    ],
+    "official_x_handles": [],
+    "source_policy": "official_site_or_official_x_only"
+  }
+]
