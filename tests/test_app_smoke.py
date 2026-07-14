@@ -40,12 +40,32 @@ def test_api_status_returns_json(client):
     assert rv.content_type == "application/json"
 
 
-def test_api_retailers_returns_101_official_registry_entries(client):
+def test_api_retailers_returns_600_official_registry_entries(client):
     rv = client.get("/api/retailers")
     assert rv.status_code == 200
     retailers = rv.get_json()
-    assert len(retailers) == 101
+    assert len(retailers) == 600
     assert all("allowed_domains" in r and "promo_paths" in r for r in retailers)
+    assert all("logo_url" in r and r["logo_url"].startswith("https://") for r in retailers)
+    assert all(isinstance(r.get("popularity_rank"), int) for r in retailers)
+    assert [r["popularity_rank"] for r in retailers] == list(range(1, 601))
+    assert len({r["domain"] for r in retailers}) == 600
+    assert len({r["slug"] for r in retailers}) == 600
+    domains = {r["domain"] for r in retailers}
+    assert "rakuten.com" not in domains
+    assert "capitaloneshopping.com" not in domains
+
+
+def test_expanded_registry_preserves_curated_original_targets(client):
+    retailers = {r["domain"]: r for r in client.get("/api/retailers").get_json()}
+    assert "/c/target-deals/-/N-4xw74" in retailers["target.com"]["promo_paths"]
+    assert "/site/top-deals" in retailers["bestbuy.com"]["promo_paths"]
+    assert retailers["macys.com"]["promo_paths"] == ["/shop/coupons-deals"]
+    assert "bestbuy" in retailers["bestbuy.com"].get("keywords", [])
+    assert "b&h" in retailers["bhphotovideo.com"].get("keywords", [])
+    assert retailers["hm.com"]["slug"] == "h-and-m"
+    assert retailers["lowes.com"]["slug"] == "lowes"
+    assert retailers["booking.com"]["slug"] == "bookingcom"
 
 
 def test_source_status_returns_registry_coverage(client):
@@ -53,7 +73,16 @@ def test_source_status_returns_registry_coverage(client):
     assert rv.status_code == 200
     data = rv.get_json()
     assert data["freshness_hours"] == 3
-    assert len(data["retailers"]) == 101
+    assert len(data["retailers"]) == 600
+    assert all(r.get("logo_url", "").startswith("https://") for r in data["retailers"])
+
+
+def test_api_categories_cover_registry_not_just_current_deals(client):
+    rv = client.get("/api/categories")
+    assert rv.status_code == 200
+    categories = rv.get_json()
+    assert sum(c["count"] for c in categories) == 600
+    assert {"fashion", "electronics", "travel", "home", "food"}.issubset({c["category"] for c in categories})
 
 
 def test_api_scrape_post(client, monkeypatch):
@@ -83,6 +112,8 @@ def test_build_deal_creates_official_fresh_deal():
     assert deal["retailer"] == retailer["name"]
     assert deal["code"] == "SAVE20"
     assert deal["type"] == "code"
+    assert deal["logo_url"].startswith("https://")
+    assert deal["popularity_rank"] == retailer["popularity_rank"]
     assert deal["official_source"] is True
     assert validate_deal(deal) is True
 
@@ -99,6 +130,27 @@ def test_build_deal_no_code_is_deal_type():
     )
     assert deal["type"] == "deal"
     assert validate_deal(deal) is True
+
+
+def test_scrape_official_site_does_not_publish_generic_homepage_placeholder(monkeypatch):
+    import app as app_module
+
+    class FakeResponse:
+        url = "https://www.example.com/"
+        text = "<html><body><h1>Welcome to Example</h1><p>No sale language here.</p></body></html>"
+
+    retailer = {
+        "name": "Example",
+        "domain": "example.com",
+        "category": "services",
+        "color": "#333333",
+        "icon": "🧰",
+        "promo_paths": ["/"],
+        "allowed_domains": ["example.com", "www.example.com"],
+        "logo_url": "https://www.google.com/s2/favicons?sz=128&domain=example.com",
+    }
+    monkeypatch.setattr(app_module, "safe_get_official", lambda url, retailer: FakeResponse())
+    assert app_module.scrape_official_site(retailer) == []
 
 
 def test_validate_deal_rejects_third_party_source():

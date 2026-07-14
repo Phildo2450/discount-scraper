@@ -94,6 +94,10 @@ def load_official_retailers():
         r.setdefault("promo_paths", ["/", "/sale", "/deals", "/offers", "/coupons", "/promo-code"])
         r.setdefault("official_x_handles", [])
         r.setdefault("source_policy", "official_site_or_official_x_only")
+        r.setdefault("logo_url", f"https://www.google.com/s2/favicons?sz=128&domain={domain}")
+        r.setdefault("logo_source", "google_favicon")
+    for idx, r in enumerate(retailers, 1):
+        r.setdefault("popularity_rank", idx)
     return retailers
 
 RETAILERS = [
@@ -187,6 +191,9 @@ def build_deal(retailer=None, code="", description="", discount="", source="", u
         "category": retailer.get("category", ""),
         "color": retailer.get("color", "#333333"),
         "icon": retailer.get("icon", ""),
+        "logo_url": retailer.get("logo_url", f"https://www.google.com/s2/favicons?sz=128&domain={retailer.get('domain', '')}"),
+        "logo_source": retailer.get("logo_source", "google_favicon"),
+        "popularity_rank": retailer.get("popularity_rank"),
         "domain": retailer.get("domain", ""),
         "code": code.strip().upper(),
         "description": description or "",
@@ -424,10 +431,8 @@ def scrape_official_site(retailer):
                     deals.append(deal); found_on_page += 1
             if len(deals) >= MAX_DEALS_PER_RETAILER:
                 break
-        if not found_on_page and path in ("/", ""):
-            home = official_site_home_deal(retailer, r.url)
-            if validate_deal(home):
-                deals.append(home)
+        # Do not publish a generic homepage placeholder. A public record must
+        # contain an observed discount/code from an official page or feed.
         if len(deals) >= MAX_DEALS_PER_RETAILER:
             break
     validation_logger.info("Official site → %s: %s deals", retailer.get("name"), len(deals))
@@ -616,7 +621,13 @@ def api_deals():
     if deal_type:
         deals = [d for d in deals if d.get("type", "").lower() == deal_type]
 
-    if sort in {"discount", "best"}:
+    if sort in {"popular", "popularity", "confidence", "trending"}:
+        def popularity_key(deal):
+            checked = parse_dt(deal.get("source_checked_at"))
+            fresh_ts = checked.timestamp() if checked else 0
+            return (deal.get("popularity_rank") or 999999, -fresh_ts)
+        deals.sort(key=popularity_key)
+    elif sort in {"discount", "best"}:
         deals.sort(key=lambda d: int((re.search(r"(\d+)", d.get("discount", "")) or [0, 0])[1]), reverse=True)
     else:
         deals.sort(key=lambda d: d.get("source_checked_at", ""), reverse=True)
@@ -663,7 +674,7 @@ def healthz():
 
 @app.route("/api/retailers")
 def api_retailers():
-    return jsonify(RETAILERS)
+    return jsonify(sorted(RETAILERS, key=lambda r: r.get("popularity_rank", 999999)))
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
@@ -671,7 +682,6 @@ def api_retailers():
 
 @app.route("/api/categories")
 def api_categories():
-    deals = public_deals()
     cat_meta = {
         "services": {"color": "#8338EC", "icon": "\ud83d\udd27", "label": "Services"},
         "electronics": {"color": "#8338EC", "icon": "\ud83d\udcfa", "label": "Electronics"},
@@ -681,10 +691,19 @@ def api_categories():
         "food": {"color": "#FB5607", "icon": "\ud83c\udf54", "label": "Food"},
         "travel": {"color": "#8338EC", "icon": "\u2708\ufe0f", "label": "Travel"},
         "health": {"color": "#06D6A0", "icon": "\ud83d\udc8a", "label": "Health"},
+        "tech": {"color": "#8338EC", "icon": "\ud83d\udcbb", "label": "Tech"},
+        "gaming": {"color": "#8338EC", "icon": "\ud83c\udfae", "label": "Gaming"},
+        "finance": {"color": "#06D6A0", "icon": "\ud83d\udcb3", "label": "Finance"},
+        "sports": {"color": "#06D6A0", "icon": "\ud83c\udfc0", "label": "Sports"},
+        "auto": {"color": "#EF476F", "icon": "\ud83d\ude97", "label": "Auto"},
+        "office": {"color": "#6C757D", "icon": "\ud83d\udcce", "label": "Office"},
+        "marketplace": {"color": "#FFB703", "icon": "\ud83d\uded2", "label": "Marketplace"},
+        "big-box": {"color": "#FF9900", "icon": "\ud83c\udfea", "label": "Big-Box"},
+        "pets": {"color": "#F77F00", "icon": "\ud83d\udc3e", "label": "Pets"},
     }
     cat_counts = {}
-    for deal in deals:
-        cat = deal.get("category", "services").lower()
+    for retailer in RETAILERS:
+        cat = retailer.get("category", "services").lower()
         cat_counts[cat] = cat_counts.get(cat, 0) + 1
     result = []
     for cat, count in sorted(cat_counts.items(), key=lambda x: -x[1]):
@@ -730,6 +749,8 @@ def api_source_status():
     for r in RETAILERS:
         by_retailer[r["slug"]] = {
             "name": r["name"], "domain": r["domain"],
+            "category": r.get("category"), "logo_url": r.get("logo_url"),
+            "popularity_rank": r.get("popularity_rank"),
             "official_x_handles": r.get("official_x_handles", []),
             "promo_paths": r.get("promo_paths", []),
             "fresh_deals": 0, "fresh_codes": 0,

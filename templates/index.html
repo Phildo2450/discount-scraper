@@ -825,8 +825,8 @@ header{
       <select id="sortSelect" onchange="reloadDeals()" style="
         background:var(--card);border:1px solid var(--border2);color:var(--text);
         border-radius:var(--r-xs);padding:6px 10px;font-size:13px;outline:none;cursor:pointer">
-        <option value="confidence">Best Match</option>
-        <option value="trending">Trending</option>
+        <option value="popular">Most Popular</option>
+        <option value="discount">Biggest Discount</option>
         <option value="new">Newest</option>
       </select>
     </div>
@@ -903,7 +903,7 @@ header{
 <script>
 // ── State ────────────────────────────────────────────────────────────────────
 let allDeals = [], page = 1, hasMore = true, isLoading = false;
-let activeCategory = '', activeType = '', activeSort = 'confidence';
+let activeCategory = '', activeType = '', activeSort = 'popular';
 let searchDebounce = null;
 let savedDeals = JSON.parse(localStorage.getItem('savedDeals') || '[]');
 let isMusicPlaying = false;
@@ -982,7 +982,7 @@ async function loadCategories() {
       card.innerHTML = `
         <div class="cat-icon">${c.icon}</div>
         <div class="cat-label">${c.label}</div>
-        <div class="cat-count">${c.count} deals</div>`;
+        <div class="cat-count">${c.count} stores</div>`;
       card.onclick = () => {
         document.querySelector('.section-header h2#feedTitle') &&
           (document.getElementById('feedTitle').textContent = `${c.icon} ${c.label} Deals`);
@@ -1108,16 +1108,18 @@ async function loadStories() {
   try {
     const retailers = await apiFetch('/api/retailers');
     const scroll = document.getElementById('storiesScroll');
+    scroll.innerHTML = '';
     retailers.forEach(r => {
+      const logo = safeUrlAttr(retailerLogoUrl(r));
       const item = document.createElement('div');
       item.className = 'story-item';
       item.innerHTML = `
         <div class="story-ring">
           <div class="story-avatar" style="background:color-mix(in srgb,${r.color||'#8338EC'} 20%,var(--card2))">
-            ${r.domain ? '<img class="retailer-logo-avatar" src="https://www.google.com/s2/favicons?sz=128&domain=' + r.domain + '" onerror="this.style.display=\'none\'">' : (r.icon||"")}
+            ${logo ? '<img class="retailer-logo-avatar" src="' + logo + '" loading="lazy">' : (r.icon||"")}
           </div>
         </div>
-        <div class="story-name">${r.name}</div>`;
+        <div class="story-name">${esc(r.name)}</div>`;
       item.onclick = () => {
         const pill = document.querySelector(`.cat-pill[data-cat="${r.category}"]`);
             document.getElementById('searchInput').value = r.name;
@@ -1470,18 +1472,32 @@ function sourceLabel(d) {
   return `Official ${d.retailer || 'site'}`;
 }
 
+function retailerLogoUrl(d) {
+  if (d.logo_url) return d.logo_url;
+  if (d.domain) return `https://www.google.com/s2/favicons?sz=128&domain=${d.domain}`;
+  return '';
+}
+
+function safeUrlAttr(url) {
+  try {
+    const parsed = new URL(String(url || ''), window.location.origin);
+    return parsed.protocol === 'https:' ? esc(parsed.href) : '';
+  } catch(e) { return ''; }
+}
+
 function dealCardHTML(d) {
   const saved = savedDeals.includes(d.id);
   const successRate = d.successRate ?? (d.confidence > 1 ? 80 : null);
   const viewers = Math.floor(Math.random()*40)+3;
   const checkedAgo = timeAgo(d.source_checked_at);
+  const logo = safeUrlAttr(retailerLogoUrl(d));
 
   return `
   <div class="deal-card" style="--retailer-color:${d.color||'#8338EC'}">
-    ${d.domain?'<div class="amazon-logo-overlay"><img src="https://www.google.com/s2/favicons?sz=128&domain=' + d.domain + '" alt="' + (d.retailer||'') + '">' + '</div>':''}
+    ${logo?'<div class="amazon-logo-overlay"><img src="' + logo + '" alt="' + esc(d.retailer||'') + '">' + '</div>':''}
       <div class="card-badges">
       <span class="badge retailer" style="--retailer-color:${d.color||'#8338EC'}">
-        ${d.domain ? '<img class="retailer-logo-badge" src="https://www.google.com/s2/favicons?sz=128&domain=' + d.domain + '" onerror="this.style.display=\'none\'">' : (d.icon||"")} ${esc(d.retailer)}
+        ${logo ? '<img class="retailer-logo-badge" src="' + logo + '" loading="lazy">' : (d.icon||"")} ${esc(d.retailer)}
       </span>
       <span class="badge ${(d.deal_type||d.type)==='code'?'type-code':'type-deal'}">
         ${(d.deal_type||d.type)==='code'?'🎟 Code':'🏷 Deal'}
@@ -1498,8 +1514,7 @@ function dealCardHTML(d) {
     ${d.code?`
     <div class="code-box" title="Click to copy code and visit retailer">
       <div class="code-text">${esc(d.code)}</div>
-      <button class="copy-btn" data-copy-id="${d.id}"
-        onclick="copyCode('${esc(d.code)}','${d.id}','${esc(d.retailer)}')">
+      <button class="copy-btn" data-action="copy" data-code="${esc(d.code)}" data-deal-id="${esc(d.id)}" data-retailer="${esc(d.retailer)}">
         📋 Copy
       </button>
     </div>`:''}
@@ -1525,14 +1540,14 @@ function dealCardHTML(d) {
 
     <div class="vote-row">
       <button class="vote-btn worked ${d.successVotes>d.failVotes?'voted-yes':''}"
-        data-vote-yes="${d.id}" onclick="vote('${d.id}',true)">
+        data-vote-yes="${esc(d.id)}" data-action="vote" data-deal-id="${esc(d.id)}" data-worked="true">
         <span>✅</span> Worked <span class="vote-count">${d.successVotes||0}</span>
       </button>
       <button class="vote-btn didnt ${d.failVotes>d.successVotes?'voted-no':''}"
-        data-vote-no="${d.id}" onclick="vote('${d.id}',false)">
+        data-vote-no="${esc(d.id)}" data-action="vote" data-deal-id="${esc(d.id)}" data-worked="false">
         <span>❌</span> Didn't <span class="vote-count">${d.failVotes||0}</span>
       </button>
-      <button onclick="saveDeal('${d.id}')" data-save-id="${d.id}"
+      <button data-action="save" data-deal-id="${esc(d.id)}" data-save-id="${esc(d.id)}"
         style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);
         border:1px solid var(--border2);font-size:16px;display:flex;align-items:center;
         justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0"
@@ -1548,11 +1563,12 @@ function dealCardHTML(d) {
 }
 
 function carouselCardHTML(d) {
+  const logo = safeUrlAttr(retailerLogoUrl(d));
   return `
   <div class="carousel-card" style="--retailer-grad:linear-gradient(135deg,${d.color||'#8338EC'},#3A86FF)"
-    onclick="copyCode('${esc(d.code||d.description)}','${d.id}','${esc(d.retailer)}')">
+    data-action="copy" data-code="${esc(d.code||d.description)}" data-deal-id="${esc(d.id)}" data-retailer="${esc(d.retailer)}">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-      <span style="font-size:22px">${d.icon||'🏪'}</span>
+      ${logo ? '<img class="retailer-logo-badge" src="' + logo + '" loading="lazy">' : '<span style="font-size:22px">' + (d.icon||'🏪') + '</span>'}
       <div>
         <div style="font-weight:700;font-size:14px">${esc(d.retailer)}</div>
         <div style="font-size:11px;color:var(--muted)">${d.isTrending?'🔥 Trending':sourceLabel(d)}</div>
@@ -1605,6 +1621,20 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.dealId || '';
+  if (el.dataset.action === 'copy') {
+    e.preventDefault();
+    copyCode(el.dataset.code || '', id, el.dataset.retailer || '');
+  } else if (el.dataset.action === 'vote') {
+    vote(id, el.dataset.worked === 'true');
+  } else if (el.dataset.action === 'save') {
+    saveDeal(id);
+  }
+});
 
 // ── Section nav (mobile) ───────────────────────────────────────────────────────
 function showSection(name) {
